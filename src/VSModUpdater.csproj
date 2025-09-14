@@ -7,11 +7,30 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
 	<UseWindowsForms>true</UseWindowsForms>
-	<AssemblyVersion>0.0.3.0</AssemblyVersion>
-	<FileVersion>0.0.3.0</FileVersion>
+	  
+	<!-- Single file publish settings -->
+	<PublishSingleFile>true</PublishSingleFile>
+	<SelfContained>true</SelfContained>
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+	<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+	  
+	<!-- Generate assembly info -->
+	<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+
+	<!-- Versioning -->
+	<AssemblyVersion>0.1.0.0</AssemblyVersion>
+	<FileVersion>0.1.0.0</FileVersion>
+	  
+	<!-- File Info -->
+	<AssemblyName>VS Mod Update Tool</AssemblyName>
+	<Product>VS Mod Update Tool</Product>
+	<Description>A tool for Vintage Story server hosts to easily handle mod updates.</Description>
+	<Company>AriesLR</Company>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.12.2" />
     <PackageReference Include="MahApps.Metro" Version="2.4.10" />
     <PackageReference Include="MahApps.Metro.IconPacks.Core" Version="6.1.0" />
     <PackageReference Include="MahApps.Metro.IconPacks.FontAwesome" Version="6.1.0" />

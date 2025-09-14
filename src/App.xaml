@@ -1,7 +1,7 @@
 ﻿<Application x:Class="VSModUpdater.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:local="clr-namespace:VSModUpdater"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
@@ -17,7 +17,7 @@
                    TargetType="{x:Type DataGridColumnHeader}"
                    BasedOn="{StaticResource MahApps.Styles.DataGridColumnHeader}">
                 <!-- Force Normal Casing -->
-                <Setter Property="controls:ControlsHelper.ContentCharacterCasing" Value="Normal" />
+                <Setter Property="mah:ControlsHelper.ContentCharacterCasing" Value="Normal" />
                 <!-- Center Header -->
                 <Setter Property="HorizontalContentAlignment" Value="Center" />
                 <Setter Property="VerticalContentAlignment" Value="Center" />

@@ -79,5 +79,51 @@ namespace VSModUpdater.Resources.Functions.Services
 
             await mainWindow.ShowMessageAsync("Error", message, MessageDialogStyle.Affirmative);
         }
+
+        // Additional dialogs for VSModUpdater
+
+        // TextBox input dialog for inputting mod page links
+        public static async Task<string> ShowInput(string title, string message)
+        {
+            var mainWindow = GetMainWindow();
+            if (mainWindow == null)
+                throw new InvalidOperationException("Main window is not a MetroWindow or has not been set.");
+
+            var settings = new MetroDialogSettings
+            {
+                AffirmativeButtonText = "OK",
+                NegativeButtonText = "Cancel",
+                DefaultText = "",
+                AnimateShow = true,
+                AnimateHide = true
+            };
+
+            var result = await mainWindow.ShowInputAsync(title, message, settings);
+
+            return result ?? string.Empty;
+        }
+
+        // Folder browser dialog for startup
+        public static async Task<bool> ShowBrowseCancel(string title, string message)
+        {
+            var mainWindow = GetMainWindow();
+            if (mainWindow == null)
+                throw new InvalidOperationException("Main window is not a MetroWindow or has not been set.");
+
+            var settings = new MetroDialogSettings
+            {
+                AffirmativeButtonText = "Browse",
+                NegativeButtonText = "Cancel"
+            };
+
+            var result = await mainWindow.ShowMessageAsync(
+                title,
+                message,
+                MessageDialogStyle.AffirmativeAndNegative,
+                settings
+            );
+
+            return result == MessageDialogResult.Affirmative;
+        }
     }
 }
