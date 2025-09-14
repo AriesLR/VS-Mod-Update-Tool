@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.0.3] - 09-14-2025
+
+### Added
+- Added game version dropdown selection.
+
+- Added a check for mod updates button.
+
+### Changed
+- Code cleanup.
+
+---
+
 ## [v0.0.2] - 09-14-2025
 
 ### Added
@@ -16,6 +28,6 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [v0.0.1] - 09-14-2025
+## [v0.0.1] - 09-13-2025
 ### Added
 - Initial commit of the project, barebones at this point.
