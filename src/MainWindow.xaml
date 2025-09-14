@@ -40,49 +40,89 @@
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Top Browse & Button Section -->
+        <!-- Top Section -->
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 10 0 20">
+
+            <!-- Game Version Dropdown -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
+                <ComboBox x:Name="GameVersionDropdown"
+                          Width="150"
+                          Height="30"
+                          VerticalAlignment="Center"
+                          SelectedIndex="0">
+                    <ComboBoxItem Content="1.21.x" />
+                    <ComboBoxItem Content="1.20.x" />
+                    <ComboBoxItem Content="1.19.x" />
+                    <ComboBoxItem Content="1.18.x" />
+                    <ComboBoxItem Content="1.17.x" />
+                    <ComboBoxItem Content="1.16.x" />
+                    <ComboBoxItem Content="1.15.x" />
+                    <ComboBoxItem Content="1.14.x" />
+                    <ComboBoxItem Content="1.13.x" />
+                    <ComboBoxItem Content="1.12.x" />
+                    <ComboBoxItem Content="1.11.x" />
+                    <ComboBoxItem Content="1.10.x" />
+                    <ComboBoxItem Content="1.9.x" />
+                    <ComboBoxItem Content="1.8.x" />
+                    <ComboBoxItem Content="1.7.x" />
+                    <ComboBoxItem Content="1.6.x" />
+                    <ComboBoxItem Content="1.5.x" />
+                    <ComboBoxItem Content="1.4.x" />
+                </ComboBox>
+            </StackPanel>
+
+            <!-- Browse Folder TextBox + Button -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 10 0 20" Grid.Column="1">
                 <TextBox x:Name="ModsFolderTextBox"
-                 Width="500"
-                 IsReadOnly="True"
-                 Margin="0,0,10,0"
-                 VerticalAlignment="Center" />
-                <Button Content="Browse..." Width="100" Click="BrowseFolder_Click" />
+                         Width="500"
+                         Height="30"
+                         IsReadOnly="True"
+                         Margin="0,0,-2,0"
+                         VerticalAlignment="Center" />
+                <Button Content="Browse..." Width="100" Height="30" Click="BrowseFolder_Click" />
             </StackPanel>
         </Grid>
 
-        <!-- Mods Table -->
-        <DataGrid x:Name="ModsDataGrid"
-                  Grid.Row="1"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  CanUserAddRows="False"
-                  Margin="0,0,0,10"
-                  VerticalAlignment="Stretch"
-                  HorizontalAlignment="Stretch"
-                  ColumnHeaderStyle="{DynamicResource CenteredMetroColumnHeader}">
+        <!-- Middle Section -->
+        <Grid Grid.Row="1" Margin="0 0 0 20">
+            <Button x:Name="CheckUpdatesButton"
+                    Content="Check for Updates"
+                    Width="150"
+                    Height="30"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Click="CheckUpdatesButton_Click" />
+        </Grid>
 
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" Width="200"
-                            ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200"
-                            ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
-                <DataGridTextColumn Header="Version" Binding="{Binding Version}" Width="100"
-                            ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
-                <DataGridTextColumn Header="Game" Binding="{Binding Game}" Width="100"
-                            ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
-                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"
-                            ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
-            </DataGrid.Columns>
-        </DataGrid>
+        <!-- Bottom Section -->
+        <Grid Grid.Row="2" Margin="0 0 0 10">
+            <!-- Mods Table -->
+            <DataGrid x:Name="ModsDataGrid"
+                      Grid.Row="1"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      CanUserAddRows="False"
+                      Margin="0,0,0,10"
+                      VerticalAlignment="Stretch"
+                      HorizontalAlignment="Stretch"
+                      ColumnHeaderStyle="{DynamicResource CenteredMetroColumnHeader}">
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" Width="200" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
+                    <DataGridTextColumn Header="Version" Binding="{Binding Version}" Width="100" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
+                    <DataGridTextColumn Header="Game" Binding="{Binding Game}" Width="100" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
+                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
     </Grid>
 </mah:MetroWindow>
