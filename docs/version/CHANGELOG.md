@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.1.0]
+
+### Added
+- Moved the mods folder textbox to the title bar.
+- Enabled click-and-drag of the window via the mods folder textbox.
+- "Check for Mod Updates" button with update checking logic.
+- "Update All Mods" button with bulk download logic.
+- Prompt on launch to select the mods folder.
+- HtmlAgilityPack added for scraping mod pages to find versions and download links.
+- Single-file publishing enabled.
+- Assembly information added to the program.
+- MessageService updated with custom dialogs for this app.
+
+### Changed
+- Mods table layout updated with a "Latest Version" column.
+- Config file location changed to `Documents\AriesLR\VSModUpdateTool`.
+- modinfo.json parsing updated to handle both uppercase and lowercase field names.
+- Empty fields in the Mods table now display as "N/A".
+
+### Removed
+- Folder browse textbox and button.
+
+---
+
 ## [v0.0.3] - 09-14-2025
 
 ### Added
