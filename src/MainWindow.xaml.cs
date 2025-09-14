@@ -1,7 +1,7 @@
 ﻿using MahApps.Metro.Controls;
+using Newtonsoft.Json.Linq;
 using System.IO;
 using System.IO.Compression;
-using System.Text.Json;
 using System.Windows;
 using VSModUpdater.Resources.Functions.Services;
 
@@ -57,6 +57,13 @@ namespace VSModUpdater
         {
             var mods = new List<ModInfo>();
 
+            string GetValue(JObject obj, string key)
+            {
+                return obj.Properties()
+                          .FirstOrDefault(p => string.Equals(p.Name, key, StringComparison.OrdinalIgnoreCase))
+                          ?.Value?.ToString() ?? "";
+            }
+
             foreach (var zipFile in Directory.GetFiles(folderPath, "*.zip"))
             {
                 try
@@ -70,19 +77,26 @@ namespace VSModUpdater
                             using (var reader = new StreamReader(stream))
                             {
                                 string json = reader.ReadToEnd();
+                                var root = JObject.Parse(json);
 
-                                using var doc = JsonDocument.Parse(json);
-                                var root = doc.RootElement;
+                                string gameVersion = "";
+                                var dependenciesToken = root.Properties()
+                                                            .FirstOrDefault(p => string.Equals(p.Name, "dependencies", StringComparison.OrdinalIgnoreCase))
+                                                            ?.Value as JObject;
+                                if (dependenciesToken != null)
+                                {
+                                    gameVersion = dependenciesToken.Properties()
+                                                                   .FirstOrDefault(p => string.Equals(p.Name, "game", StringComparison.OrdinalIgnoreCase))
+                                                                   ?.Value?.ToString() ?? "";
+                                }
 
                                 var mod = new ModInfo
                                 {
                                     FileName = Path.GetFileName(zipFile),
-                                    Name = root.TryGetProperty("name", out var name) ? name.GetString() : "",
-                                    Version = root.TryGetProperty("version", out var version) ? version.GetString() : "",
-                                    Game = root.TryGetProperty("dependencies", out var deps) && deps.TryGetProperty("game", out var game)
-                                        ? game.GetString()
-                                        : "",
-                                    Description = root.TryGetProperty("description", out var desc) ? desc.GetString() : ""
+                                    Name = GetValue(root, "name"),
+                                    Version = GetValue(root, "version"),
+                                    Game = gameVersion,
+                                    Description = GetValue(root, "description")
                                 };
 
                                 mods.Add(mod);
