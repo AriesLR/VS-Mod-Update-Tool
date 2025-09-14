@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [v0.1.0]
+## [v0.1.0] - 09-14-2025
 
 ### Added
 - Moved the mods folder textbox to the title bar.
