@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 - Progress bars and completion dialogs for checking for updates and updating mods.  
 - Logic to track how many mods were checked and which mods have updates available.  
 - Extended error logging to display informative messages for additional actions that may cause errors.  
-- A summary screen after updating mods showing which mods were updated (by `modId`) and their version changes, with a copyable text box for sharing the results.  
+- A summary screen after updating mods showing which mods were updated (by `modId`) and their version changes, with a button for copying the text to share the results.  
 - Logic for updating a single mod independently of the full update process.
 
 ### Changed
