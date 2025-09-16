@@ -6,13 +6,19 @@
         xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         Title="VS Mod Update Tool"
+        MinHeight="800"
+        MinWidth="1100"
         Height="800"
-        Width="1200"
+        Width="1100"
         FontFamily="Segoe UI"
         GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
         WindowStyle="SingleBorderWindow"
         ResizeMode="CanResizeWithGrip"
         mc:Ignorable="d">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </Window.Resources>
 
     <mah:MetroWindow.LeftWindowCommands>
         <mah:WindowCommands>
@@ -24,17 +30,109 @@
 
     <mah:MetroWindow.RightWindowCommands>
         <mah:WindowCommands>
-            <Grid Width="675" HorizontalAlignment="Center" Background="Transparent">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Click="RefreshMods_Click" ToolTip="Refresh the current mods folder">
+                <iconPacks:PackIconMaterial Width="22" Height="22" Kind="FolderRefresh" />
+            </Button>
+
+            <Button Click="BrowseFolder_Click" ToolTip="Browse for a mods folder">
+                <iconPacks:PackIconMaterial Width="22" Height="22" Kind="FolderOpen" />
+            </Button>
+
+            <Button Click="LaunchBrowserCVPDiscord" ToolTip="Join the Discord for our Vintage Story server">
+                <iconPacks:PackIconFontAwesome Width="22" Height="22" Kind="DiscordBrands" />
+            </Button>
+
+            <Button Click="CheckForUpdates" ToolTip="Check for updates">
+                <iconPacks:PackIconMaterial Width="22" Height="22" Kind="Update" />
+            </Button>
+        </mah:WindowCommands>
+    </mah:MetroWindow.RightWindowCommands>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Top Section -->
+        <Grid Grid.Row="0">
+            <!-- Mods Table -->
+            <DataGrid x:Name="ModsDataGrid"
+                      Grid.Row="1"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      CanUserAddRows="False"
+                      Margin="0,0,0,10"
+                      RowHeight="30"
+                      ColumnHeaderHeight="30"
+                      VerticalAlignment="Stretch"
+                      HorizontalAlignment="Stretch"
+                      ColumnHeaderStyle="{DynamicResource CenteredMetroColumnHeader}">
+
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderBrush" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="DataGridRow">
+                                    <DataGridCellsPresenter/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </DataGrid.RowStyle>
+
+
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn Header="Has Update" Binding="{Binding HasUpdate, Mode=OneWay}" MinWidth="100" Width="*" ElementStyle="{DynamicResource MetroDataGridCheckBox}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" MinWidth="225" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
+                    <DataGridTextColumn Header="Mod Name" Binding="{Binding Name}" MinWidth="225" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
+                    <DataGridTextColumn Header="Game Version" Binding="{Binding Game}" MinWidth="125" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
+                    <DataGridTextColumn Header="Installed Version" Binding="{Binding Version}" MinWidth="125" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
+                    <DataGridTextColumn Header="Latest Version" Binding="{Binding LatestVersion}" MinWidth="125" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
+                    <DataGridTemplateColumn Header="Update" MinWidth="125" Width="*" IsReadOnly="False" CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Update" Width="75" Height="25" Click="UpdateModButton_Click" Visibility="{Binding HasUpdate, Converter={StaticResource BoolToVis}}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+        <!-- Bottom Section -->
+        <Grid Grid.Row="1" Background="#212121">
+            <Grid Height="50" Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
+                    <Button x:Name="CheckUpdatesButton"
+                   Content="Check for Mod Updates"
+                   Width="150"
+                   Height="30"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Margin="15 0 0 0"
+                   Click="CheckUpdatesButton_Click" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1">
                     <TextBox x:Name="ModsFolderTextBox"
-                             Width="675"
+                             Width="660"
                              Height="20"
                              IsReadOnly="True"
                              VerticalAlignment="Center"
                              TextAlignment="Center"
                              Margin="0,0,5,0"
-                             PreviewMouseDown="ModsFolderTextBox_PreviewMouseDown"
-                             Background="Transparent"
+                             Background="{DynamicResource MahApps.Brushes.Window.Background}"
                              BorderBrush="Transparent">
                         <TextBox.Style>
                             <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
@@ -46,124 +144,60 @@
                         </TextBox.Style>
                     </TextBox>
                 </StackPanel>
-            </Grid>
 
-            <Button Click="CheckForUpdates" Content="Check for updates">
-                <Button.ContentTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <iconPacks:PackIconMaterial Width="22" Height="22" VerticalAlignment="Center" Kind="Update" />
-                            <TextBlock Margin="4 0 0 0" VerticalAlignment="Center" Text="{Binding}" />
-                        </StackPanel>
-                    </DataTemplate>
-                </Button.ContentTemplate>
-            </Button>
-        </mah:WindowCommands>
-    </mah:MetroWindow.RightWindowCommands>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="2">
+                    <Button x:Name="UpdateAllModsButton"
+                   Content="Update All Mods"
+                   Width="150"
+                   Height="30"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Margin="0 0 15 0"
+                   Click="UpdateAllModsButton_Click" />
+                </StackPanel>
 
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
-        <!-- Top Section -->
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
-                <Button x:Name="CheckUpdatesButton"
-                    Content="Check for Mod Updates"
-                    Width="150"
-                    Height="30"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Click="CheckUpdatesButton_Click" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
-                <Button x:Name="UpdateAllModsButton"
-                    Content="Update All Mods"
-                    Width="150"
-                    Height="30"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Click="UpdateAllModsButton_Click" />
-            </StackPanel>
-
-            <!-- Game Version Dropdown -->
-            <!--
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
-                <ComboBox x:Name="GameVersionDropdown"
-                          Width="150"
-                          Height="30"
-                          VerticalAlignment="Center"
-                          SelectedIndex="0">
-                    <ComboBoxItem Content="1.21.x" />
-                    <ComboBoxItem Content="1.20.x" />
-                    <ComboBoxItem Content="1.19.x" />
-                    <ComboBoxItem Content="1.18.x" />
-                    <ComboBoxItem Content="1.17.x" />
-                    <ComboBoxItem Content="1.16.x" />
-                    <ComboBoxItem Content="1.15.x" />
-                    <ComboBoxItem Content="1.14.x" />
-                    <ComboBoxItem Content="1.13.x" />
-                    <ComboBoxItem Content="1.12.x" />
-                    <ComboBoxItem Content="1.11.x" />
-                    <ComboBoxItem Content="1.10.x" />
-                    <ComboBoxItem Content="1.9.x" />
-                    <ComboBoxItem Content="1.8.x" />
-                    <ComboBoxItem Content="1.7.x" />
-                    <ComboBoxItem Content="1.6.x" />
-                    <ComboBoxItem Content="1.5.x" />
-                    <ComboBoxItem Content="1.4.x" />
-                </ComboBox>
-            </StackPanel>-->
-
-            <!-- Browse Folder TextBox + Button -->
-            <!--
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 20" Grid.Column="1">
-                <TextBox x:Name="ModsFolderTextBox"
-                         Width="500"
+                <!-- Game Version Dropdown -->
+                <!--
+           <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
+               <ComboBox x:Name="GameVersionDropdown"
+                         Width="150"
                          Height="30"
-                         IsReadOnly="True"
-                         Margin="0,0,-2,0"
-                         VerticalAlignment="Center" />
-                <Button Content="Browse..." Width="100" Height="30" Click="BrowseFolder_Click" />
-            </StackPanel>
-            -->
-        </Grid>
+                         VerticalAlignment="Center"
+                         SelectedIndex="0">
+                   <ComboBoxItem Content="1.21.x" />
+                   <ComboBoxItem Content="1.20.x" />
+                   <ComboBoxItem Content="1.19.x" />
+                   <ComboBoxItem Content="1.18.x" />
+                   <ComboBoxItem Content="1.17.x" />
+                   <ComboBoxItem Content="1.16.x" />
+                   <ComboBoxItem Content="1.15.x" />
+                   <ComboBoxItem Content="1.14.x" />
+                   <ComboBoxItem Content="1.13.x" />
+                   <ComboBoxItem Content="1.12.x" />
+                   <ComboBoxItem Content="1.11.x" />
+                   <ComboBoxItem Content="1.10.x" />
+                   <ComboBoxItem Content="1.9.x" />
+                   <ComboBoxItem Content="1.8.x" />
+                   <ComboBoxItem Content="1.7.x" />
+                   <ComboBoxItem Content="1.6.x" />
+                   <ComboBoxItem Content="1.5.x" />
+                   <ComboBoxItem Content="1.4.x" />
+               </ComboBox>
+           </StackPanel>-->
 
-        <!-- Middle Section -->
-        <Grid Grid.Row="1" Margin="0 0 0 20">
-        </Grid>
-
-        <!-- Bottom Section -->
-        <Grid Grid.Row="2" Margin="0 0 0 10">
-            <!-- Mods Table -->
-            <DataGrid x:Name="ModsDataGrid"
-                      Grid.Row="1"
-                      AutoGenerateColumns="False"
-                      IsReadOnly="True"
-                      CanUserAddRows="False"
-                      Margin="0,0,0,10"
-                      VerticalAlignment="Stretch"
-                      HorizontalAlignment="Stretch"
-                      ColumnHeaderStyle="{DynamicResource CenteredMetroColumnHeader}">
-
-                <DataGrid.Columns>
-                    <DataGridCheckBoxColumn ElementStyle="{DynamicResource MetroDataGridCheckBox}" EditingElementStyle="{DynamicResource MetroDataGridCheckBox}" Header="Has Update" IsReadOnly="True" Binding="{Binding HasUpdate, Mode=OneWay}" />
-                    <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" Width="200" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
-                    <DataGridTextColumn Header="Mod Name" Binding="{Binding Name}" Width="200" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
-                    <DataGridTextColumn Header="Game Version" Binding="{Binding Game}" Width="125" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
-                    <DataGridTextColumn Header="Installed Version" Binding="{Binding Version}" Width="125" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
-                    <DataGridTextColumn Header="Latest Version" Binding="{Binding LatestVersion}" Width="125" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
-                </DataGrid.Columns>
-            </DataGrid>
+                <!-- Browse Folder TextBox + Button -->
+                <!--
+           <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 20" Grid.Column="1">
+               <TextBox x:Name="ModsFolderTextBox"
+                        Width="500"
+                        Height="30"
+                        IsReadOnly="True"
+                        Margin="0,0,-2,0"
+                        VerticalAlignment="Center" />
+               <Button Content="Browse..." Width="100" Height="30" Click="BrowseFolder_Click" />
+           </StackPanel>
+           -->
+            </Grid>
         </Grid>
     </Grid>
 </mah:MetroWindow>

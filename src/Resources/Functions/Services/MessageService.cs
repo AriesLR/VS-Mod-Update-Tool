@@ -82,6 +82,26 @@ namespace VSModUpdater.Resources.Functions.Services
 
         // Additional dialogs for VSModUpdater
 
+        // Modlist Output
+        public static async Task<string> ShowModOutput(string title, string message, string textboxText)
+        {
+            var mainWindow = GetMainWindow();
+            if (mainWindow == null)
+                throw new InvalidOperationException("Main window is not a MetroWindow or has not been set.");
+
+            var settings = new MetroDialogSettings
+            {
+                AffirmativeButtonText = "OK",
+                DefaultText = textboxText,
+                AnimateShow = true,
+                AnimateHide = true
+            };
+
+            var result = await mainWindow.ShowInputAsync(title, message, settings);
+
+            return result ?? string.Empty;
+        }
+
         // TextBox input dialog for inputting mod page links
         public static async Task<string> ShowInput(string title, string message)
         {
