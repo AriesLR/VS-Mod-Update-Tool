@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.2.2] - 09-16-2025
+
+### Added
+- Confirmation prompt before downloading all mods.
+
+### Changed
+- Additional UI adjustments.
+
+---
+
+## [v0.2.1] - 09-16-2025
+
+### Added
+- New dialog type.
+
+### Changed
+- Updated the application theme.
+- Changed the assembly name.
+
+---
+
 ## [v0.2.0.0] - 09-16-2025
 
 ### Added
