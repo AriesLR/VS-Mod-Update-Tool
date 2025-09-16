@@ -83,7 +83,7 @@ namespace VSModUpdater.Resources.Functions.Services
         // Additional dialogs for VSModUpdater
 
         // Modlist Output
-        public static async Task<string> ShowModOutput(string title, string message, string textboxText)
+        public static async Task ShowModOutput(string title, string message, string textboxText)
         {
             var mainWindow = GetMainWindow();
             if (mainWindow == null)
@@ -91,15 +91,19 @@ namespace VSModUpdater.Resources.Functions.Services
 
             var settings = new MetroDialogSettings
             {
-                AffirmativeButtonText = "OK",
-                DefaultText = textboxText,
+                AffirmativeButtonText = "Ok",
+                NegativeButtonText = "Copy Output",
                 AnimateShow = true,
                 AnimateHide = true
             };
 
-            var result = await mainWindow.ShowInputAsync(title, message, settings);
+            var result = await mainWindow.ShowMessageAsync(title, $"{message}\n\n{textboxText}", MessageDialogStyle.AffirmativeAndNegative, settings);
 
-            return result ?? string.Empty;
+            // Why is this backwards?
+            if (result == MessageDialogResult.Negative)
+            {
+                Clipboard.SetText(textboxText ?? string.Empty);
+            }
         }
 
         // TextBox input dialog for inputting mod page links
@@ -111,7 +115,7 @@ namespace VSModUpdater.Resources.Functions.Services
 
             var settings = new MetroDialogSettings
             {
-                AffirmativeButtonText = "OK",
+                AffirmativeButtonText = "Ok",
                 NegativeButtonText = "Cancel",
                 DefaultText = "",
                 AnimateShow = true,
