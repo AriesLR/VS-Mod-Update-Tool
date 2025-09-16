@@ -105,16 +105,17 @@
         </Grid>
 
         <!-- Bottom Section -->
-        <Grid Grid.Row="1" Background="#212121">
-            <Grid Height="50" Margin="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
+        <Grid Grid.Row="1" Background="#212121" >
+            <Border BorderBrush="{DynamicResource MahApps.Brushes.Accent4}" BorderThickness="0 1 0 0">
+                <Grid Height="50" Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
-                    <Button x:Name="CheckUpdatesButton"
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0" >
+                        <Button x:Name="CheckUpdatesButton"
                    Content="Check for Mod Updates"
                    Width="150"
                    Height="30"
@@ -122,10 +123,10 @@
                    VerticalAlignment="Center"
                    Margin="15 0 0 0"
                    Click="CheckUpdatesButton_Click" />
-                </StackPanel>
+                    </StackPanel>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1">
-                    <TextBox x:Name="ModsFolderTextBox"
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1">
+                        <TextBox x:Name="ModsFolderTextBox"
                              Width="660"
                              Height="20"
                              IsReadOnly="True"
@@ -134,19 +135,19 @@
                              Margin="0,0,5,0"
                              Background="{DynamicResource MahApps.Brushes.Window.Background}"
                              BorderBrush="Transparent">
-                        <TextBox.Style>
-                            <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                                <Setter Property="Background" Value="Transparent" />
-                                <Setter Property="BorderBrush" Value="Transparent" />
-                                <Setter Property="BorderThickness" Value="0" />
-                                <Setter Property="OverridesDefaultStyle" Value="True" />
-                            </Style>
-                        </TextBox.Style>
-                    </TextBox>
-                </StackPanel>
+                            <TextBox.Style>
+                                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="BorderBrush" Value="Transparent" />
+                                    <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="OverridesDefaultStyle" Value="True" />
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </StackPanel>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="2">
-                    <Button x:Name="UpdateAllModsButton"
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="2">
+                        <Button x:Name="UpdateAllModsButton"
                    Content="Update All Mods"
                    Width="150"
                    Height="30"
@@ -154,10 +155,10 @@
                    VerticalAlignment="Center"
                    Margin="0 0 15 0"
                    Click="UpdateAllModsButton_Click" />
-                </StackPanel>
+                    </StackPanel>
 
-                <!-- Game Version Dropdown -->
-                <!--
+                    <!-- Game Version Dropdown -->
+                    <!--
            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
                <ComboBox x:Name="GameVersionDropdown"
                          Width="150"
@@ -185,8 +186,8 @@
                </ComboBox>
            </StackPanel>-->
 
-                <!-- Browse Folder TextBox + Button -->
-                <!--
+                    <!-- Browse Folder TextBox + Button -->
+                    <!--
            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 20" Grid.Column="1">
                <TextBox x:Name="ModsFolderTextBox"
                         Width="500"
@@ -197,7 +198,8 @@
                <Button Content="Browse..." Width="100" Height="30" Click="BrowseFolder_Click" />
            </StackPanel>
            -->
-            </Grid>
+                </Grid>
+            </Border>
         </Grid>
     </Grid>
 </mah:MetroWindow>

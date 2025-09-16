@@ -384,8 +384,25 @@ namespace VSModUpdater
         // UPDATE ALL MODS SECTION  //
         //////////////////////////////
 
-        // Update All Mods
+        // Updates All Mods Button
         private async void UpdateAllModsButton_Click(object sender, RoutedEventArgs e)
+        {
+            bool result = await MessageService.ShowYesCancel(
+                "Confirm Update",
+                "Are you sure you want to update all mods?");
+
+            if (result)
+            {
+                await UpdateAllMods();
+            }
+            else
+            {
+                // Cancel
+            }
+        }
+
+        // Update All Mods
+        private async Task UpdateAllMods()
         {
             if (string.IsNullOrWhiteSpace(ModsFolderTextBox.Text) || !Directory.Exists(ModsFolderTextBox.Text))
             {
