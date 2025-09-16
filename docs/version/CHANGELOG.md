@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.2.0.0] - 09-16-2025
+
+### Added
+- Buttons and logic for refreshing the mods folder, browsing for a different mods folder, and joining the Discord server for our Vintage Story server.  
+- An update button within the table for updating individual mods without updating all mods at once.  
+- Progress bars and completion dialogs for checking for updates and updating mods.  
+- Logic to track how many mods were checked and which mods have updates available.  
+- Extended error logging to display informative messages for additional actions that may cause errors.  
+- A summary screen after updating mods showing which mods were updated (by `modId`) and their version changes, with a copyable text box for sharing the results.  
+- Logic for updating a single mod independently of the full update process.
+
+### Changed
+- User interface has been cleaned up for improved usability.  
+- Code has been refactored and cleaned for maintainability.
+
+### Fixed
+- Corrected links required by the app, including the `update.json` file in the repository and the repository page itself.
+
+---
+
 ## [v0.1.0] - 09-14-2025
 
 ### Added
