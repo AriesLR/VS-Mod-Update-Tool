@@ -211,7 +211,6 @@ namespace VSModUpdater
         }
 
         // Check for mod updates
-        // Check for mod updates
         private async Task CheckForModUpdatesAsync()
         {
             if (ModsDataGrid.ItemsSource is not List<ModInfo> mods || mods.Count == 0)
