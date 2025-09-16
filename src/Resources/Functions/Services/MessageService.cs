@@ -82,6 +82,29 @@ namespace VSModUpdater.Resources.Functions.Services
 
         // Additional dialogs for VSModUpdater
 
+        // Yes/Cancel
+        public static async Task<bool> ShowYesCancel(string title, string message)
+        {
+            var mainWindow = GetMainWindow();
+            if (mainWindow == null)
+                throw new InvalidOperationException("Main window is not a MetroWindow or has not been set.");
+
+            var settings = new MetroDialogSettings
+            {
+                AffirmativeButtonText = "Yes",
+                NegativeButtonText = "Cancel"
+            };
+
+            var result = await mainWindow.ShowMessageAsync(
+                title,
+                message,
+                MessageDialogStyle.AffirmativeAndNegative,
+                settings
+            );
+
+            return result == MessageDialogResult.Affirmative;
+        }
+
         // Modlist Output
         public static async Task ShowModOutput(string title, string message, string textboxText)
         {

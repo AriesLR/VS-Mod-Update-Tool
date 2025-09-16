@@ -23,11 +23,15 @@
 	<FileVersion>0.2.0.0</FileVersion>
 	  
 	<!-- File Info -->
-	<AssemblyName>VS Mod Update Tool</AssemblyName>
+	<AssemblyName>VS-Mod-Update-Tool</AssemblyName>
 	<Product>VS Mod Update Tool</Product>
 	<Description>A tool for Vintage Story server hosts to easily handle mod updates.</Description>
 	<Company>AriesLR</Company>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Page Remove="Resources\Themes\Dark.DarkOliveGreen.xaml" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.12.2" />
@@ -36,6 +40,12 @@
     <PackageReference Include="MahApps.Metro.IconPacks.FontAwesome" Version="6.1.0" />
     <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="6.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Themes\Dark.DarkOliveGreen.xaml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>
