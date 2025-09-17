@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.3.0] - 09-17-2025
+
+### Added
+- Game version selection dropdown for finding the most recent mod updates by [major.minor](https://semver.org) version (e.g. `1.21.x`).  
+  - Patch version no longer matters, as long as the update matches the selected [major.minor](https://semver.org) version.  
+
+### Changed
+- Updated MahApps.Metro from 2.4.10 → 2.4.11.  
+- Updated Newtonsoft.Json from 13.0.3 → 13.0.4.  
+- Switched update checking to use the Vintage Story Mods API instead of scraping webpages.  
+- Download logic adapted to align with the new update-checking method.  
+
+### Fixed
+- General code cleanup.  
+
+### Removed
+- HtmlAgilityPack dependency removed.  
+
+---
+
 ## [v0.2.2] - 09-16-2025
 
 ### Added

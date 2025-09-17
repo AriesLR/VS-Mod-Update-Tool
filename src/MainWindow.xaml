@@ -1,23 +1,23 @@
 ﻿<mah:MetroWindow x:Class="VSModUpdater.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-        Title="VS Mod Update Tool"
-        MinHeight="800"
-        MinWidth="1100"
-        Height="800"
-        Width="1100"
-        FontFamily="Segoe UI"
-        GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
-        WindowStyle="SingleBorderWindow"
-        ResizeMode="CanResizeWithGrip"
-        mc:Ignorable="d">
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                 xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+                 Title="VS Mod Update Tool"
+                 MinHeight="800"
+                 MinWidth="1100"
+                 Height="800"
+                 Width="1100"
+                 FontFamily="Segoe UI"
+                 GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
+                 WindowStyle="SingleBorderWindow"
+                 ResizeMode="CanResizeWithGrip"
+                 mc:Ignorable="d">
 
     <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </Window.Resources>
 
     <mah:MetroWindow.LeftWindowCommands>
@@ -30,6 +30,60 @@
 
     <mah:MetroWindow.RightWindowCommands>
         <mah:WindowCommands>
+            <!-- Game Version Dropdown -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0" Margin="0 0 5 0">
+                <ComboBox x:Name="GameVersionDropdown"
+                          Width="150"
+                          Height="25"
+                          Foreground="{DynamicResource MahApps.Brushes.Gray6}"
+                          VerticalAlignment="Center"
+                          SelectedIndex="0">
+                    
+                    <ComboBox.Resources>
+                        <SolidColorBrush x:Key="MahApps.Brushes.ComboBox.Border.MouseOver" Color="{StaticResource MahApps.Colors.Gray.SemiTransparent}" />
+                        <SolidColorBrush x:Key="MahApps.Brushes.ComboBox.Border" Color="{StaticResource MahApps.Colors.Gray.SemiTransparent}"/>
+                        <SolidColorBrush x:Key="MahApps.Brushes.ComboBox.Border.Focus" Color="{StaticResource MahApps.Colors.Gray.SemiTransparent}"/>
+
+                        <SolidColorBrush x:Key="MahApps.Brushes.Gray1" Color="{StaticResource MahApps.Colors.Gray6}"/>
+                        <SolidColorBrush x:Key="MahApps.Brushes.Gray5" Color="{StaticResource MahApps.Colors.Gray.SemiTransparent}"/>
+                    </ComboBox.Resources>
+
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.Gray.SemiTransparent}" />
+                            <Setter Property="BorderThickness" Value="1" />
+                            <Setter Property="OverridesDefaultStyle" Value="True" />
+
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Gray.SemiTransparent}" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+
+                    <ComboBoxItem Content="1.21.x" />
+                    <ComboBoxItem Content="1.20.x" />
+                    <ComboBoxItem Content="1.19.x" />
+                    <ComboBoxItem Content="1.18.x" />
+                    <ComboBoxItem Content="1.17.x" />
+                    <ComboBoxItem Content="1.16.x" />
+                    <ComboBoxItem Content="1.15.x" />
+                    <ComboBoxItem Content="1.14.x" />
+                    <ComboBoxItem Content="1.13.x" />
+                    <ComboBoxItem Content="1.12.x" />
+                    <ComboBoxItem Content="1.11.x" />
+                    <ComboBoxItem Content="1.10.x" />
+                    <ComboBoxItem Content="1.9.x" />
+                    <ComboBoxItem Content="1.8.x" />
+                    <ComboBoxItem Content="1.7.x" />
+                    <ComboBoxItem Content="1.6.x" />
+                    <ComboBoxItem Content="1.5.x" />
+                    <ComboBoxItem Content="1.4.x" />
+                </ComboBox>
+            </StackPanel>
+
             <Button Click="RefreshMods_Click" ToolTip="Refresh the current mods folder">
                 <iconPacks:PackIconMaterial Width="22" Height="22" Kind="FolderRefresh" />
             </Button>
@@ -71,20 +125,19 @@
 
                 <DataGrid.RowStyle>
                     <Style TargetType="DataGridRow">
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="BorderBrush" Value="Transparent"/>
-                        <Setter Property="BorderThickness" Value="0"/>
-                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="BorderBrush" Value="Transparent" />
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="DataGridRow">
-                                    <DataGridCellsPresenter/>
+                                    <DataGridCellsPresenter />
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
                     </Style>
                 </DataGrid.RowStyle>
-
 
                 <DataGrid.Columns>
                     <DataGridCheckBoxColumn Header="Has Update" Binding="{Binding HasUpdate, Mode=OneWay}" MinWidth="100" Width="*" ElementStyle="{DynamicResource MetroDataGridCheckBox}" IsReadOnly="True" />
@@ -105,7 +158,7 @@
         </Grid>
 
         <!-- Bottom Section -->
-        <Grid Grid.Row="1" Background="#212121" >
+        <Grid Grid.Row="1" Background="#212121">
             <Border BorderBrush="{DynamicResource MahApps.Brushes.Accent4}" BorderThickness="0 1 0 0">
                 <Grid Height="50" Margin="10">
                     <Grid.ColumnDefinitions>
@@ -114,27 +167,28 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0" >
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
                         <Button x:Name="CheckUpdatesButton"
-                   Content="Check for Mod Updates"
-                   Width="150"
-                   Height="30"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   Margin="15 0 0 0"
-                   Click="CheckUpdatesButton_Click" />
+                                Content="Check for Mod Updates"
+                                Width="150"
+                                Height="30"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Margin="15 0 0 0"
+                                Click="CheckUpdatesButton_Click" />
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1">
                         <TextBox x:Name="ModsFolderTextBox"
-                             Width="660"
-                             Height="20"
-                             IsReadOnly="True"
-                             VerticalAlignment="Center"
-                             TextAlignment="Center"
-                             Margin="0,0,5,0"
-                             Background="{DynamicResource MahApps.Brushes.Window.Background}"
-                             BorderBrush="Transparent">
+                                 Width="660"
+                                 Height="20"
+                                 IsReadOnly="True"
+                                 VerticalAlignment="Center"
+                                 TextAlignment="Center"
+                                 Margin="0,0,5,0"
+                                 Foreground="{DynamicResource MahApps.Brushes.Gray6}"
+                                 Background="{DynamicResource MahApps.Brushes.Window.Background}"
+                                 BorderBrush="Transparent">
                             <TextBox.Style>
                                 <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                     <Setter Property="Background" Value="Transparent" />
@@ -148,56 +202,14 @@
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="2">
                         <Button x:Name="UpdateAllModsButton"
-                   Content="Update All Mods"
-                   Width="150"
-                   Height="30"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   Margin="0 0 15 0"
-                   Click="UpdateAllModsButton_Click" />
+                                Content="Update All Mods"
+                                Width="150"
+                                Height="30"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Margin="0 0 15 0"
+                                Click="UpdateAllModsButton_Click" />
                     </StackPanel>
-
-                    <!-- Game Version Dropdown -->
-                    <!--
-           <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
-               <ComboBox x:Name="GameVersionDropdown"
-                         Width="150"
-                         Height="30"
-                         VerticalAlignment="Center"
-                         SelectedIndex="0">
-                   <ComboBoxItem Content="1.21.x" />
-                   <ComboBoxItem Content="1.20.x" />
-                   <ComboBoxItem Content="1.19.x" />
-                   <ComboBoxItem Content="1.18.x" />
-                   <ComboBoxItem Content="1.17.x" />
-                   <ComboBoxItem Content="1.16.x" />
-                   <ComboBoxItem Content="1.15.x" />
-                   <ComboBoxItem Content="1.14.x" />
-                   <ComboBoxItem Content="1.13.x" />
-                   <ComboBoxItem Content="1.12.x" />
-                   <ComboBoxItem Content="1.11.x" />
-                   <ComboBoxItem Content="1.10.x" />
-                   <ComboBoxItem Content="1.9.x" />
-                   <ComboBoxItem Content="1.8.x" />
-                   <ComboBoxItem Content="1.7.x" />
-                   <ComboBoxItem Content="1.6.x" />
-                   <ComboBoxItem Content="1.5.x" />
-                   <ComboBoxItem Content="1.4.x" />
-               </ComboBox>
-           </StackPanel>-->
-
-                    <!-- Browse Folder TextBox + Button -->
-                    <!--
-           <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 20" Grid.Column="1">
-               <TextBox x:Name="ModsFolderTextBox"
-                        Width="500"
-                        Height="30"
-                        IsReadOnly="True"
-                        Margin="0,0,-2,0"
-                        VerticalAlignment="Center" />
-               <Button Content="Browse..." Width="100" Height="30" Click="BrowseFolder_Click" />
-           </StackPanel>
-           -->
                 </Grid>
             </Border>
         </Grid>

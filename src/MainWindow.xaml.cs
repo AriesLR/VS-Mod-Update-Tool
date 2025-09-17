@@ -6,9 +6,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
 using System.Windows;
-using System.Windows.Input;
+using System.Windows.Controls;
 using VSModUpdater.Resources.Functions.Services;
-using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace VSModUpdater
 {
@@ -34,21 +33,6 @@ namespace VSModUpdater
                     await PromptOnStart();
                 }), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
             };
-        }
-
-        // Model for the table data
-        public class ModInfo
-        {
-            public string FileName { get; set; }
-            public string Name { get; set; }
-            public string Version { get; set; }
-            public string Game { get; set; }
-            public string Description { get; set; }
-
-            public string LatestVersion { get; set; } = "";
-            public string DownloadLink { get; set; } = "";
-
-            public bool HasUpdate => !string.IsNullOrWhiteSpace(LatestVersion) && Version != LatestVersion;
         }
 
         // Open Github Repo
@@ -92,11 +76,12 @@ namespace VSModUpdater
         }
 
         // Method to allow dragging the title bar through the text box
-        private void ModsFolderTextBox_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        /*private void ModsFolderTextBox_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
                 this.DragMove();
         }
+        */
 
         // Browse folder button
         private void BrowseFolder_Click(object sender, RoutedEventArgs e)
@@ -186,10 +171,24 @@ namespace VSModUpdater
         // CHECK FOR MOD UPDATES SECTION //
         ///////////////////////////////////
 
+        // Model for the table data
+        public class ModInfo
+        {
+            public string FileName { get; set; }
+            public string Name { get; set; }
+            public string Version { get; set; }
+            public string Game { get; set; }
+            public string Description { get; set; }
+
+            public string LatestVersion { get; set; } = "";
+            public string DownloadLink { get; set; } = "";
+
+            public bool HasUpdate => !string.IsNullOrWhiteSpace(LatestVersion) && Version != LatestVersion;
+        }
+
         // Model for JSON storage
         private class ModLinkInfo
         {
-            public string UserLink { get; set; }
             public string DownloadLink { get; set; }
         }
 
@@ -216,22 +215,23 @@ namespace VSModUpdater
             if (ModsDataGrid.ItemsSource is not List<ModInfo> mods || mods.Count == 0)
                 return;
 
+            var savedLinks = LoadSavedModLinks();
+
             await MessageService.ShowProgress("Checking for mod updates", "Please wait...", async progress =>
             {
-                var savedLinks = LoadSavedModLinks();
                 using var client = new HttpClient();
-
                 int totalModsChecked = mods.Count;
                 int processedModsChecked = 0;
-
-                // List to keep track of mods that need updates
                 var modsNeedingUpdate = new List<ModInfo>();
+
+                string selectedVersion = (GameVersionDropdown.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "1.21.x";
+                string selectedVersionPrefix = selectedVersion.Replace(".x", "");
 
                 foreach (var mod in mods)
                 {
-                    // Read modId from modName.zip
                     string zipPath = Path.Combine(ModsFolderTextBox.Text, mod.FileName);
                     string modId = null;
+
                     try
                     {
                         using var archive = ZipFile.OpenRead(zipPath);
@@ -242,128 +242,72 @@ namespace VSModUpdater
                             using var reader = new StreamReader(stream);
                             var json = reader.ReadToEnd();
                             var root = JObject.Parse(json);
-                            modId = root.Properties().FirstOrDefault(p => string.Equals(p.Name, "modId", StringComparison.OrdinalIgnoreCase))?.Value?.ToString();
+
+                            modId = root.Properties().FirstOrDefault(p => string.Equals(p.Name, "ModID", StringComparison.OrdinalIgnoreCase))?.Value?.ToString();
+
+                            mod.Version = root.Properties().FirstOrDefault(p => string.Equals(p.Name, "version", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? mod.Version;
                         }
-                        else
-                        {
-                            await MessageService.ShowError($"No modinfo.json found in {mod.FileName}, skipping this mod.");
-                        }
                     }
-                    catch (InvalidDataException ex)
+                    catch
                     {
-                        await MessageService.ShowError($"Corrupt ZIP file: {mod.FileName}\n{ex.Message}");
-                    }
-                    catch (JsonException ex)
-                    {
-                        await MessageService.ShowError($"Invalid JSON in modinfo.json for {mod.FileName}\n{ex.Message}");
-                    }
-                    catch (Exception ex)
-                    {
-                        await MessageService.ShowError($"Unexpected error reading {mod.FileName}\n{ex.Message}");
+                        continue;
                     }
 
                     if (!string.IsNullOrEmpty(modId))
                     {
-                        string modLink = null;
+                        try
+                        {
+                            string apiUrl = $"https://mods.vintagestory.at/api/mod/{modId}";
+                            string response = await client.GetStringAsync(apiUrl);
+                            var apiData = JObject.Parse(response);
 
-                        // If the ModLinks.json contains a link, use it.
-                        if (savedLinks.ContainsKey(modId))
-                        {
-                            modLink = savedLinks[modId].UserLink;
-                        }
-                        else
-                        {
-                            // Keep prompting until valid link entered or user skips
-                            while (true)
+                            var releases = apiData["mod"]?["releases"] as JArray;
+                            if (releases != null && releases.Count > 0)
                             {
-                                modLink = await MessageService.ShowInput("Enter Mod Link", $"Please enter the mod link for \"{mod.Name}\" " + $"\n\n(e.g. https://mods.vintagestory.at/combatoverhaul\n Or \n https://mods.vintagestory.at/show/mod/463):");
-
-                                if (!string.IsNullOrWhiteSpace(modLink))
+                                foreach (var release in releases)
                                 {
-                                    savedLinks[modId] = new ModLinkInfo { UserLink = modLink };
-                                    SaveModLinks(savedLinks);
-                                    break;
-                                }
-
-                                // Ask if user wants to skip this mod
-                                bool skip = await MessageService.ShowYesNo("Skip Mod?", $"You did not enter a link for \"{mod.Name}\".\nDo you want to skip this mod?");
-
-                                if (skip)
-                                {
-                                    modLink = null;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (!string.IsNullOrWhiteSpace(modLink))
-                        {
-                            // Ensure it has #tab-files suffix, this is likely not needed since the html is exposed from the main link
-                            if (!modLink.Contains("#tab-files"))
-                                modLink += "#tab-files";
-
-                            try
-                            {
-                                // Fetch mod page
-                                string modPageHtml = await client.GetStringAsync(modLink);
-                                var modDoc = new HtmlDocument();
-                                modDoc.LoadHtml(modPageHtml);
-
-                                // Grab release table rows
-                                var fileRows = modDoc.DocumentNode.SelectNodes("//div[contains(@class,'tab-content files')]//table[contains(@class,'release-table')]//tr");
-
-                                if (fileRows != null)
-                                {
-                                    foreach (var row in fileRows)
+                                    var tags = release["tags"]?.Select(t => t.ToString()) ?? Enumerable.Empty<string>();
+                                    if (tags.Any(t => t.StartsWith(selectedVersionPrefix)))
                                     {
-                                        // Skip header row
-                                        if (row.SelectNodes(".//th") != null)
-                                            continue;
+                                        string latestVersion = release["modversion"]?.ToString()?.TrimStart('v').Trim();
+                                        string currentVersion = mod.Version?.TrimStart('v').Trim();
 
-                                        var versionTd = row.SelectSingleNode(".//td[1]");
-                                        string latestVersion = versionTd?.InnerText.Trim() ?? "";
+                                        mod.LatestVersion = latestVersion;
+                                        mod.DownloadLink = release["mainfile"]?.ToString();
 
-                                        var downloadNode = row.SelectSingleNode(".//a[contains(@class,'mod-dl')]");
-                                        string downloadLink = downloadNode != null ? "https://mods.vintagestory.at" + downloadNode.GetAttributeValue("href", "") : "";
-
-                                        if (!string.IsNullOrEmpty(latestVersion) && !string.IsNullOrEmpty(downloadLink))
+                                        // Update saved links
+                                        if (!string.IsNullOrEmpty(modId) && !string.IsNullOrEmpty(mod.DownloadLink))
                                         {
-                                            // Update ModInfo model
-                                            mod.LatestVersion = latestVersion;
-                                            mod.DownloadLink = downloadLink;
-
-                                            // Save download link into JSON
-                                            if (savedLinks.ContainsKey(modId))
-                                                savedLinks[modId].DownloadLink = downloadLink;
-                                            else
-                                                savedLinks[modId] = new ModLinkInfo { UserLink = modLink, DownloadLink = downloadLink };
-
-                                            SaveModLinks(savedLinks);
-                                            break;
+                                            savedLinks[modId] = new ModLinkInfo
+                                            {
+                                                DownloadLink = mod.DownloadLink
+                                            };
                                         }
+
+                                        if (!string.IsNullOrEmpty(latestVersion) && !string.IsNullOrEmpty(currentVersion))
+                                        {
+                                            if (IsVersionGreater(latestVersion, currentVersion))
+                                                modsNeedingUpdate.Add(mod);
+                                        }
+
+                                        break; // stop after first matching release
                                     }
                                 }
                             }
-                            catch (Exception ex)
-                            {
-                                await MessageService.ShowError($"Failed to parse mod page for {mod.Name}: {ex.Message}");
-                            }
                         }
+                        catch { }
                     }
 
-                    // Track mods that need updates
-                    if (mod.HasUpdate)
-                        modsNeedingUpdate.Add(mod);
-
-                    // Update progress after each mod
                     processedModsChecked++;
                     progress.Report((double)processedModsChecked / totalModsChecked);
                 }
 
-                // Refresh DataGrid
+                // Sort and save the updated links
+                var sortedLinks = savedLinks.OrderBy(kvp => kvp.Key).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                SaveModLinks(sortedLinks);
+
                 ModsDataGrid.Items.Refresh();
 
-                // Build summary message
                 string message;
                 if (modsNeedingUpdate.Count > 0)
                 {
@@ -375,14 +319,73 @@ namespace VSModUpdater
                     message = "All mods are up to date!";
                 }
 
-                // Inform user the operation is complete
                 await MessageService.ShowInfo("Update Check Complete", message);
             });
         }
 
-        //////////////////////////////
-        // UPDATE ALL MODS SECTION  //
-        //////////////////////////////
+        private bool IsVersionGreater(string v1, string v2)
+        {
+            string[] splitV1 = v1.Split('-', '.', '+');
+            string[] splitV2 = v2.Split('-', '.', '+');
+
+            int maxLen = Math.Max(splitV1.Length, splitV2.Length);
+
+            for (int i = 0; i < maxLen; i++)
+            {
+                int n1 = i < splitV1.Length && int.TryParse(splitV1[i], out var val1) ? val1 : 0;
+                int n2 = i < splitV2.Length && int.TryParse(splitV2[i], out var val2) ? val2 : 0;
+
+                if (n1 > n2) return true;
+                if (n1 < n2) return false;
+            }
+
+            // If numeric parts are equal, treat release > pre-release
+            bool isV1PreRelease = v1.Contains("-");
+            bool isV2PreRelease = v2.Contains("-");
+            if (isV1PreRelease && !isV2PreRelease) return false;
+            if (!isV1PreRelease && isV2PreRelease) return true;
+
+            return false;
+        }
+
+        /////////////////////////
+        // UPDATE MODS SECTION //
+        /////////////////////////
+
+        // Extract the actual download URL (strip ?dl=...)
+        private static string GetActualDownloadUrl(string url)
+        {
+            int qIndex = url.IndexOf("?dl=");
+            return qIndex >= 0 ? url.Substring(0, qIndex) : url;
+        }
+
+        // Extract the file name from the ?dl= parameter
+        private static string GetFileNameFromDownloadUrl(string url)
+        {
+            int qIndex = url.IndexOf("?dl=");
+            string fileName = qIndex >= 0 ? url.Substring(qIndex + 4) : Path.GetFileName(url);
+
+            // Clean invalid file name characters
+            foreach (var c in Path.GetInvalidFileNameChars())
+                fileName = fileName.Replace(c, '_');
+
+            return fileName;
+        }
+
+        // Download a file to temp folder using the stripped URL
+        private static async Task<string> DownloadFileToTempAsync(string url, HttpClient client)
+        {
+            string actualUrl = GetActualDownloadUrl(url);
+            string tempFilePath = Path.Combine(Path.GetTempPath(), GetFileNameFromDownloadUrl(url));
+
+            using var response = await client.GetAsync(actualUrl, HttpCompletionOption.ResponseHeadersRead);
+            response.EnsureSuccessStatusCode();
+
+            using var fs = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            await response.Content.CopyToAsync(fs);
+
+            return tempFilePath;
+        }
 
         // Updates All Mods Button
         private async void UpdateAllModsButton_Click(object sender, RoutedEventArgs e)
@@ -393,7 +396,7 @@ namespace VSModUpdater
 
             if (result)
             {
-                await UpdateAllMods();
+                await UpdateAllModsAsync();
             }
             else
             {
@@ -402,7 +405,7 @@ namespace VSModUpdater
         }
 
         // Update All Mods
-        private async Task UpdateAllMods()
+        private async Task UpdateAllModsAsync()
         {
             if (string.IsNullOrWhiteSpace(ModsFolderTextBox.Text) || !Directory.Exists(ModsFolderTextBox.Text))
             {
@@ -475,16 +478,12 @@ namespace VSModUpdater
                     }
 
                     string downloadUrl = savedLinks[modId].DownloadLink;
-                    string tempFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(downloadUrl));
+                    string tempFile;
 
                     try
                     {
-                        // Download the updated mod
-                        using var response = await client.GetAsync(downloadUrl);
-                        response.EnsureSuccessStatusCode();
-
-                        using var fs = new FileStream(tempFile, FileMode.Create, FileAccess.Write, FileShare.None);
-                        await response.Content.CopyToAsync(fs);
+                        // Download the updated mod using helpers
+                        tempFile = await DownloadFileToTempAsync(downloadUrl, client);
                     }
                     catch (Exception ex)
                     {
@@ -500,8 +499,8 @@ namespace VSModUpdater
                         if (File.Exists(zipPath))
                             File.Delete(zipPath);
 
-                        // Move downloaded file to mods folder
-                        string destPath = Path.Combine(ModsFolderTextBox.Text, Path.GetFileName(tempFile));
+                        // Move downloaded file to mods folder with correct name
+                        string destPath = Path.Combine(ModsFolderTextBox.Text, GetFileNameFromDownloadUrl(downloadUrl));
                         File.Move(tempFile, destPath);
 
                         // Record old/new versions for summary
@@ -539,6 +538,7 @@ namespace VSModUpdater
             }
         }
 
+        // Update Single Mod
         private async Task UpdateModAsync(ModInfo mod)
         {
             if (string.IsNullOrWhiteSpace(ModsFolderTextBox.Text) || !Directory.Exists(ModsFolderTextBox.Text))
@@ -592,16 +592,12 @@ namespace VSModUpdater
             }
 
             string downloadUrl = savedLinks[modId].DownloadLink;
-            string tempFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(downloadUrl));
+            string tempFile;
 
             try
             {
-                // Download the mod
-                using var response = await client.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead);
-                response.EnsureSuccessStatusCode();
-
-                using var fs = new FileStream(tempFile, FileMode.Create, FileAccess.Write, FileShare.None);
-                await response.Content.CopyToAsync(fs);
+                // Download the mod using helpers
+                tempFile = await DownloadFileToTempAsync(downloadUrl, client);
             }
             catch (Exception ex)
             {
@@ -615,8 +611,8 @@ namespace VSModUpdater
                 if (File.Exists(zipPath))
                     File.Delete(zipPath);
 
-                // Move downloaded file
-                string destPath = Path.Combine(ModsFolderTextBox.Text, Path.GetFileName(tempFile));
+                // Move downloaded file with correct name
+                string destPath = Path.Combine(ModsFolderTextBox.Text, GetFileNameFromDownloadUrl(downloadUrl));
                 File.Move(tempFile, destPath);
 
                 // Update ModInfo
