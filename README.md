@@ -84,29 +84,12 @@ Your mod folder selections, saved links, and other settings are stored separatel
 ### VS Mod Update Tool
 ![VS Mod Update Tool](https://raw.githubusercontent.com/AriesLR/VS-Mod-Update-Tool/refs/heads/main/docs/img/VS-Mod-Update-Tool.png)
 
-### VS Mod Update Tool Info
+### Infographic
 ![VS Mod Update Tool Info](https://raw.githubusercontent.com/AriesLR/VS-Mod-Update-Tool/refs/heads/main/docs/img/VS-Mod-Update-Tool-Info.png)
 
  
 ## Acknowledgements
-- [Repak](https://github.com/trumank/repak) - For the Unreal Engine .pak file library and CLI in rust.
-    - [unpak](https://github.com/bananaturtlesandwich/unpak) - (Used by Repak) Original crate featuring read-only pak operations.
-    - [rust-u4pak](https://github.com/bananaturtlesandwich/unpak) - (Used by Repak) rust-u4pak's README detailing the pak file layout.
-    - [jieyouxu](https://github.com/jieyouxu) - (Used by Repak) for serialization implementation of the significantly more complex V11 index.
-
-- [ZenTools](https://github.com/LongerWarrior/ZenTools) - For the Tools for extracting cooked packages from the IoStore container files.
-  - [LongerWarrior](https://github.com/LongerWarrior/) - Special thanks to LongerWarrior for maintaining ZenTools.
-
-- [Buckminsterfullerene02](https://github.com/Buckminsterfullerene02/) - For the [UE Modding Tools](https://github.com/Buckminsterfullerene02/UE-Modding-Tools/) databank and contributing to the [UE Modding Guide](https://github.com/Dmgvol/UE_Modding#ue45-modding-guides).
-  - [elbadcode](https://github.com/elbadcode) - For contributing to the UE Modding Tools databank.
-  - [spuds](https://github.com/bananaturtlesandwich) - For contributing to the UE Modding Tools databank.
-
-- [Dmgvol](https://github.com/Dmgvol/) - For the [UE Modding Guide](https://github.com/Dmgvol/UE_Modding#ue45-modding-guides).
-
-- [Narknon](https://github.com/narknon) - For helping me understand how UE Modding works regarding IoStore Files.
-  - Link may be wrong, our conversations took place on discord, but I think this is their GitHub.
-
-- [1Armageddon1](https://github.com/1armageddon1) - For being the OG tester for the tool as well as helping give insight on how the tool should work. Wouldn't be nearly as far as I am progress-wise without them.
+- [Vintage Story Devs](https://www.vintagestory.at) - For unintentionally inspiring this whole project. If it wasn't for the game this wouldn't exist.
 
 
 ## License
