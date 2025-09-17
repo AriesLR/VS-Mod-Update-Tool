@@ -72,9 +72,7 @@ Getting started with **VS-Mod-Update-Tool** is simple — just download the [Lat
 
 ## Updating
 
-Updating **VS-Mod-Update-Tool** is easy. Since the app is fully portable, all you need to do is download the [Latest Release](https://github.com/AriesLR/PakMaster/releases/latest) and replace your existing `VS-Mod-Update-Tool.exe` with the new one.
-
-Your mod folder selections, saved links, and other settings are stored separately, so they will remain intact after updating.
+Updating **VS-Mod-Update-Tool** is easy. Since the app is fully portable, all you need to do is download the [Latest Release](https://github.com/AriesLR/VS-Mod-Update-Tool/releases/latest) and replace your existing `VS-Mod-Update-Tool.exe` with the new one.
 
 
 ## Infographic
