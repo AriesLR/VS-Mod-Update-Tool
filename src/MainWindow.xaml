@@ -5,11 +5,12 @@
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
                  xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+                 xmlns:converters="clr-namespace:VSModUpdater.Resources.Functions.Converters"
                  Title="VS Mod Update Tool"
                  MinHeight="800"
-                 MinWidth="1100"
+                 MinWidth="1150"
                  Height="800"
-                 Width="1100"
+                 Width="1150"
                  FontFamily="Segoe UI"
                  GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
                  WindowStyle="SingleBorderWindow"
@@ -18,12 +19,13 @@
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <converters:StringNotNullOrEmptyToVisibilityConverter x:Key="StringToVisibility" />
     </Window.Resources>
 
     <mah:MetroWindow.LeftWindowCommands>
         <mah:WindowCommands>
-            <Button Click="LaunchBrowserGitHubVSModUpdater" ToolTip="Open up the GitHub repo">
-                <iconPacks:PackIconFontAwesome Width="22" Height="22" Kind="GithubBrands" />
+            <Button Click="OpenGithubRepo_Click" ToolTip="Open the GitHub repo">
+                <iconPacks:PackIconSimpleIcons Width="22" Height="22" Kind="GitHub" />
             </Button>
         </mah:WindowCommands>
     </mah:MetroWindow.LeftWindowCommands>
@@ -38,14 +40,14 @@
                           Foreground="{DynamicResource MahApps.Brushes.Gray6}"
                           VerticalAlignment="Center"
                           SelectedIndex="0">
-                    
+
                     <ComboBox.Resources>
                         <SolidColorBrush x:Key="MahApps.Brushes.ComboBox.Border.MouseOver" Color="{StaticResource MahApps.Colors.Gray.SemiTransparent}" />
-                        <SolidColorBrush x:Key="MahApps.Brushes.ComboBox.Border" Color="{StaticResource MahApps.Colors.Gray.SemiTransparent}"/>
-                        <SolidColorBrush x:Key="MahApps.Brushes.ComboBox.Border.Focus" Color="{StaticResource MahApps.Colors.Gray.SemiTransparent}"/>
+                        <SolidColorBrush x:Key="MahApps.Brushes.ComboBox.Border" Color="{StaticResource MahApps.Colors.Gray.SemiTransparent}" />
+                        <SolidColorBrush x:Key="MahApps.Brushes.ComboBox.Border.Focus" Color="{StaticResource MahApps.Colors.Gray.SemiTransparent}" />
 
-                        <SolidColorBrush x:Key="MahApps.Brushes.Gray1" Color="{StaticResource MahApps.Colors.Gray6}"/>
-                        <SolidColorBrush x:Key="MahApps.Brushes.Gray5" Color="{StaticResource MahApps.Colors.Gray.SemiTransparent}"/>
+                        <SolidColorBrush x:Key="MahApps.Brushes.Gray1" Color="{StaticResource MahApps.Colors.Gray6}" />
+                        <SolidColorBrush x:Key="MahApps.Brushes.Gray5" Color="{StaticResource MahApps.Colors.Gray.SemiTransparent}" />
                     </ComboBox.Resources>
 
                     <ComboBox.Style>
@@ -84,20 +86,52 @@
                 </ComboBox>
             </StackPanel>
 
-            <Button Click="RefreshMods_Click" ToolTip="Refresh the current mods folder">
-                <iconPacks:PackIconMaterial Width="22" Height="22" Kind="FolderRefresh" />
+            <Button Click="RefreshMods_Click">
+                <iconPacks:PackIconMaterial Width="22" Height="22" Kind="FolderRefresh">
+                    <iconPacks:PackIconMaterial.ToolTip>
+                        <TextBlock>
+                            <Run Text="Refresh Mods Folder" Foreground="{DynamicResource MahApps.Brushes.Gray.SemiTransparent}" />
+                            <LineBreak />
+                            <Run Text="Refresh the current mods folder to check for any new or removed files." />
+                        </TextBlock>
+                    </iconPacks:PackIconMaterial.ToolTip>
+                </iconPacks:PackIconMaterial>
             </Button>
 
-            <Button Click="BrowseFolder_Click" ToolTip="Browse for a mods folder">
-                <iconPacks:PackIconMaterial Width="22" Height="22" Kind="FolderOpen" />
+            <Button Click="BrowseFolder_Click">
+                <iconPacks:PackIconMaterial Width="22" Height="22" Kind="FolderOpen">
+                    <iconPacks:PackIconMaterial.ToolTip>
+                        <TextBlock>
+                            <Run Text="Browse for a mods folder" Foreground="{DynamicResource MahApps.Brushes.Gray.SemiTransparent}" />
+                            <LineBreak />
+                            <Run Text="Open the folder browser dialog to select a new mods folder." />
+                        </TextBlock>
+                    </iconPacks:PackIconMaterial.ToolTip>
+                </iconPacks:PackIconMaterial>
             </Button>
 
-            <Button Click="LaunchBrowserCVPDiscord" ToolTip="Join the Discord for our Vintage Story server">
-                <iconPacks:PackIconFontAwesome Width="22" Height="22" Kind="DiscordBrands" />
+            <Button Click="OpenBuyMeACoffee_Click">
+                <iconPacks:PackIconSimpleIcons Width="22" Height="22" Kind="Buymeacoffee">
+                    <iconPacks:PackIconSimpleIcons.ToolTip>
+                        <TextBlock>
+                            <Run Text="Buy Me a Coffee" Foreground="{DynamicResource MahApps.Brushes.Gray.SemiTransparent}" />
+                            <LineBreak />
+                            <Run Text="If you like my work, consider buying me a coffee." />
+                        </TextBlock>
+                    </iconPacks:PackIconSimpleIcons.ToolTip>
+                </iconPacks:PackIconSimpleIcons>
             </Button>
 
-            <Button Click="CheckForUpdates" ToolTip="Check for updates">
-                <iconPacks:PackIconMaterial Width="22" Height="22" Kind="Update" />
+            <Button Click="CheckForUpdates_Click">
+                <iconPacks:PackIconMaterial Width="22" Height="22" Kind="Update">
+                    <iconPacks:PackIconMaterial.ToolTip>
+                        <TextBlock>
+                            <Run Text="Check For Updates" Foreground="{DynamicResource MahApps.Brushes.Gray.SemiTransparent}" />
+                            <LineBreak />
+                            <Run Text="Check if there are any updates available." />
+                        </TextBlock>
+                    </iconPacks:PackIconMaterial.ToolTip>
+                </iconPacks:PackIconMaterial>
             </Button>
         </mah:WindowCommands>
     </mah:MetroWindow.RightWindowCommands>
@@ -117,8 +151,8 @@
                       IsReadOnly="True"
                       CanUserAddRows="False"
                       Margin="0,0,0,10"
-                      RowHeight="30"
-                      ColumnHeaderHeight="30"
+                      RowHeight="40"
+                      ColumnHeaderHeight="35"
                       VerticalAlignment="Stretch"
                       HorizontalAlignment="Stretch"
                       ColumnHeaderStyle="{DynamicResource CenteredMetroColumnHeader}">
@@ -140,16 +174,50 @@
                 </DataGrid.RowStyle>
 
                 <DataGrid.Columns>
-                    <DataGridCheckBoxColumn Header="Has Update" Binding="{Binding HasUpdate, Mode=OneWay}" MinWidth="100" Width="*" ElementStyle="{DynamicResource MetroDataGridCheckBox}" IsReadOnly="True" />
+                    <DataGridTemplateColumn Header="Update" MinWidth="75" MaxWidth="75" SortMemberPath="HasUpdate">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <iconPacks:PackIconMaterial Kind="CheckBold" Width="15" Height="15" Foreground="Green" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding HasUpdate, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <iconPacks:PackIconMaterial.ToolTip>
+                                        <TextBlock>
+                                            <Run Text="{Binding Name}" FontWeight="Bold" />
+                                            <Run Text=" has an update" />
+                                        </TextBlock>
+                                    </iconPacks:PackIconMaterial.ToolTip>
+                                </iconPacks:PackIconMaterial>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Mod Page" MinWidth="80" MaxWidth="80" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Width="25" Height="25" Click="OpenModPage_Click" Style="{DynamicResource MahApps.Styles.Button.Circle}" Visibility="{Binding ModPageUrl, Converter={StaticResource StringToVisibility}}">
+                                    <iconPacks:PackIconMaterial Width="22" Height="22" Kind="Web" Foreground="#356CA7">
+                                        <iconPacks:PackIconMaterial.ToolTip>
+                                            <TextBlock>
+                                                <Run Text="Open the" FontStyle="Italic" />
+                                                <Run Text="{Binding Name}" FontWeight="Bold" FontStyle="Italic" />
+                                                <Run Text="mod page in your browser" FontStyle="Italic" />
+                                                <LineBreak />
+                                                <Run Text="{Binding ModPageUrl}" Foreground="#50A4FF" />
+                                            </TextBlock>
+                                        </iconPacks:PackIconMaterial.ToolTip>
+                                    </iconPacks:PackIconMaterial>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
                     <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" MinWidth="225" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
                     <DataGridTextColumn Header="Mod Name" Binding="{Binding Name}" MinWidth="225" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
                     <DataGridTextColumn Header="Game Version" Binding="{Binding Game}" MinWidth="125" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
                     <DataGridTextColumn Header="Installed Version" Binding="{Binding Version}" MinWidth="125" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
                     <DataGridTextColumn Header="Latest Version" Binding="{Binding LatestVersion}" MinWidth="125" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
-                    <DataGridTemplateColumn Header="Update" MinWidth="125" Width="*" IsReadOnly="False" CanUserSort="False">
+                    <DataGridTemplateColumn Header="" MinWidth="100" Width="*" IsReadOnly="False">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="Update" Width="75" Height="25" Click="UpdateModButton_Click" Visibility="{Binding HasUpdate, Converter={StaticResource BoolToVis}}" />
+                                <Button Content="Update" Width="75" Height="30" Click="UpdateModButton_Click" Visibility="{Binding HasUpdate, Converter={StaticResource BoolToVis}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

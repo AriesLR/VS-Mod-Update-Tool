@@ -8,7 +8,7 @@ namespace VSModUpdater.Resources.Functions.Services
     {
         private static MetroWindow GetMainWindow()
         {
-            return Application.Current.MainWindow as MetroWindow;
+            return (Application.Current.MainWindow as MetroWindow)!;
         }
 
         public static async Task ShowProgress(string title, string message, Func<IProgress<double>, Task> operation)
@@ -80,7 +80,7 @@ namespace VSModUpdater.Resources.Functions.Services
             await mainWindow.ShowMessageAsync("Error", message, MessageDialogStyle.Affirmative);
         }
 
-        // Additional dialogs for VSModUpdater
+        // ============ Additional dialogs for VSModUpdater ============
 
         // Yes/Cancel
         public static async Task<bool> ShowYesCancel(string title, string message)
@@ -120,14 +120,17 @@ namespace VSModUpdater.Resources.Functions.Services
                 AnimateHide = true
             };
 
-            var result = await mainWindow.ShowMessageAsync(title, $"{message}\n\n{textboxText}", MessageDialogStyle.AffirmativeAndNegative, settings);
+            // Remove ** for display, keep original for clipboard
+            string displayText = textboxText?.Replace("**", "") ?? "";
 
-            // Why is this backwards?
+            var result = await mainWindow.ShowMessageAsync(title, $"{message}\n\n{displayText}", MessageDialogStyle.AffirmativeAndNegative, settings);
+
             if (result == MessageDialogResult.Negative)
             {
-                Clipboard.SetText(textboxText ?? string.Empty);
+                System.Windows.Clipboard.SetText(textboxText ?? string.Empty); // Copy to clipboard copies using markdown formatting
             }
         }
+
 
         // TextBox input dialog for inputting mod page links
         public static async Task<string> ShowInput(string title, string message)
