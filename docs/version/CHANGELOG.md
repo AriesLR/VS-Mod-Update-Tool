@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.4.0] - 09-18-2025
+
+### Added
+- MahApps.Metro.IconPacks.SimpleIcons for better brand icons.  
+- Mod Page column to the mods table.  
+- Ability to click mod page icons to open the corresponding mod page in a browser.  
+- Tooltips added or improved for: Refresh Mods Folder, Browse for Mods Folder, Buy Me a Coffee, Check for Updates, Update column checkmark, and Mod Page icons.  
+- Markdown copy output for updated mods, making it easier to paste directly into Discord.  
+- App Icon for a more polished look.  
+- The app now remembers the last loaded mods folder, so you only need to select it once.  
+
+### Changed
+- Discord button replaced with a Buy Me a Coffee button.  
+- "Has Update"*column renamed to "Update".  
+- Update column now displays a checkmark icon instead of a checkbox control.  
+- Compiler warnings cleaned up (~20 resolved).  
+- Substantial code refactoring, consolidating duplicate functionality into helper methods.  
+- Improved error messages, making debugging easier.  
+- Updated build settings: SelfContained and EnableCompressionInSingleFile disabled.  
+  - .NET 8 is no longer bundled with the app (assumed to be installed separately).  
+  - File size reduced from ~70MB → ~10MB.  
+
+### Fixed
+- Issue with checking for mod updates after files were removed from the active folder.  
+  - The app now refreshes the folder before update checks, preventing file-not-found errors.  
+
+### Removed
+- MahApps.Metro.IconPacks.FontAwesome
+- Redundant"Update" header above the update button.
+
+---
+
 ## [v0.3.0] - 09-17-2025
 
 ### Added
