@@ -1,6 +1,7 @@
 ﻿using MahApps.Metro.Controls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NuGet.Versioning;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -388,28 +389,15 @@ namespace VSModUpdater
             File.WriteAllText(modlinksPath, json);
         }
 
+        // Is Version Greater helper using Nuget.Versioning
         private bool IsVersionGreater(string v1, string v2)
         {
-            string[] splitV1 = v1.Split('-', '.', '+');
-            string[] splitV2 = v2.Split('-', '.', '+');
-
-            int maxLen = Math.Max(splitV1.Length, splitV2.Length);
-
-            for (int i = 0; i < maxLen; i++)
+            if (NuGetVersion.TryParse(v1, out var version1) && NuGetVersion.TryParse(v2, out var version2))
             {
-                int n1 = i < splitV1.Length && int.TryParse(splitV1[i], out var val1) ? val1 : 0;
-                int n2 = i < splitV2.Length && int.TryParse(splitV2[i], out var val2) ? val2 : 0;
-
-                if (n1 > n2) return true;
-                if (n1 < n2) return false;
+                return version1 > version2;
             }
 
-            // If numeric parts are equal, treat release > pre-release
-            bool isV1PreRelease = v1.Contains("-");
-            bool isV2PreRelease = v2.Contains("-");
-            if (isV1PreRelease && !isV2PreRelease) return false;
-            if (!isV1PreRelease && isV2PreRelease) return true;
-
+            // If parsing fails, treat v1 as not greater, hopefully shouldn't happen
             return false;
         }
 
@@ -467,7 +455,7 @@ namespace VSModUpdater
 
                         mod.Version = version;
 
-                        // Fetch API Info
+                        // Fetch API info
                         string apiUrl = $"https://mods.vintagestory.at/api/mod/{modId}";
                         string response = await client.GetStringAsync(apiUrl);
                         var apiData = JObject.Parse(response);
@@ -479,8 +467,8 @@ namespace VSModUpdater
                         var releases = apiData["mod"]?["releases"] as JArray;
                         if (releases != null && releases.Count > 0)
                         {
-                            string? latestVersionForSelected = null;
-                            string? downloadLinkForSelected = null;
+                            string? chosenVersion = null;
+                            string? chosenDownloadUrl = null;
 
                             foreach (var release in releases)
                             {
@@ -488,23 +476,36 @@ namespace VSModUpdater
                                 if (!tags.Any(t => t.StartsWith(selectedVersionPrefix)))
                                     continue;
 
-                                // Marking as nullable to stop warning, but I should really change this eventually. It'll work fine for now and stop compiler warnings.
                                 string? releaseVersion = release["modversion"]?.ToString()?.TrimStart('v').Trim();
                                 if (string.IsNullOrEmpty(releaseVersion))
                                     continue;
 
-                                // Keep the newest version for this selected major.minor
-                                if (latestVersionForSelected == null || IsVersionGreater(releaseVersion, latestVersionForSelected))
+                                // Prefer stable releases
+                                var parsedVersion = NuGetVersion.TryParse(releaseVersion, out var v) ? v : null;
+                                if (parsedVersion == null)
+                                    continue;
+
+                                bool isPreRelease = parsedVersion.IsPrerelease;
+
+                                if (!isPreRelease)
                                 {
-                                    latestVersionForSelected = releaseVersion;
-                                    downloadLinkForSelected = release["mainfile"]?.ToString();
+                                    chosenVersion = parsedVersion.ToNormalizedString();
+                                    chosenDownloadUrl = release["mainfile"]?.ToString();
+                                    break; // stop at the first stable release
+                                }
+
+                                // If no stable yet, keep pre-release as fallback
+                                if (chosenVersion == null)
+                                {
+                                    chosenVersion = parsedVersion.ToNormalizedString();
+                                    chosenDownloadUrl = release["mainfile"]?.ToString();
                                 }
                             }
 
-                            if (latestVersionForSelected != null && downloadLinkForSelected != null)
+                            if (chosenVersion != null && chosenDownloadUrl != null)
                             {
-                                mod.LatestVersion = latestVersionForSelected;
-                                mod.ModDownloadUrl = downloadLinkForSelected;
+                                mod.LatestVersion = chosenVersion;
+                                mod.ModDownloadUrl = chosenDownloadUrl;
 
                                 lock (savedLinks)
                                 {

@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.5.1]
+
+### Added
+- Integrated NuGet.Versioning to improve semantic version sorting.
+
+### Fixed
+- Corrected update logic so that stable releases are always preferred (when available) over pre-release versions like -pre.2 or -rc.1.
+
+---
+
 ## [v0.5.0]
 
 ### Added
