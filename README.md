@@ -78,6 +78,8 @@ Updating **VS-Mod-Update-Tool** is easy. Since the app is fully portable, all yo
 ## Infographic
 ![VS Mod Update Tool Info](https://raw.githubusercontent.com/AriesLR/VS-Mod-Update-Tool/refs/heads/main/docs/img/VS-Mod-Update-Tool-Info.png)
 
+The infographic might not be 100% up to date as it takes a ton of effort to update any time I change a small thing with the UI. I will update it on larger changes otherwise it still should be mostly correct.
+
  
 ## Acknowledgements
 - [Vintage Story Devs](https://www.vintagestory.at) - For unintentionally inspiring this whole project. If it wasn't for the game this wouldn't exist.

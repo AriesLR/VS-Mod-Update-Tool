@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.4.1]
+
+### Added
+- Added a button to copy the entire mod list (useful for quickly sharing in places like a Discord server).
+
+### Changed
+- Improved the mod update check to run in parallel instead of sequentially, making it roughly 4–5x faster compared to v0.4.0.
+- Refactored backend logic related to how/when mod update checks are processed.
+
+---
+
 ## [v0.4.0] - 09-18-2025
 
 ### Added

@@ -90,7 +90,7 @@
                 <iconPacks:PackIconMaterial Width="22" Height="22" Kind="FolderRefresh">
                     <iconPacks:PackIconMaterial.ToolTip>
                         <TextBlock>
-                            <Run Text="Refresh Mods Folder" Foreground="{DynamicResource MahApps.Brushes.Gray.SemiTransparent}" />
+                            <Run Text="Refresh mods folder" Foreground="{DynamicResource MahApps.Brushes.Gray.SemiTransparent}" />
                             <LineBreak />
                             <Run Text="Refresh the current mods folder to check for any new or removed files." />
                         </TextBlock>
@@ -105,6 +105,18 @@
                             <Run Text="Browse for a mods folder" Foreground="{DynamicResource MahApps.Brushes.Gray.SemiTransparent}" />
                             <LineBreak />
                             <Run Text="Open the folder browser dialog to select a new mods folder." />
+                        </TextBlock>
+                    </iconPacks:PackIconMaterial.ToolTip>
+                </iconPacks:PackIconMaterial>
+            </Button>
+
+            <Button Click="CopyModlist_Click">
+                <iconPacks:PackIconMaterial Width="22" Height="22" Kind="ClipboardText">
+                    <iconPacks:PackIconMaterial.ToolTip>
+                        <TextBlock>
+                            <Run Text="Copy modlist" Foreground="{DynamicResource MahApps.Brushes.Gray.SemiTransparent}" />
+                            <LineBreak />
+                            <Run Text="Copy the modlist to clipboard with markdown formatting." />
                         </TextBlock>
                     </iconPacks:PackIconMaterial.ToolTip>
                 </iconPacks:PackIconMaterial>
