@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [v0.4.1]
+## [v0.5.0]
 
 ### Added
 - Added a button to copy the entire mod list (useful for quickly sharing in places like a Discord server).
