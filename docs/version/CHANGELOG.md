@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [v0.5.1]
+## [v0.5.1] - 9-20-2025
 
 ### Added
 - Integrated NuGet.Versioning to improve semantic version sorting.
@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [v0.5.0]
+## [v0.5.0] - 9-20-2025
 
 ### Added
 - Added a button to copy the entire mod list (useful for quickly sharing in places like a Discord server).
