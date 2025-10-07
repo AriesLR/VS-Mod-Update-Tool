@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.5.2]
+
+### Added
+- Added support for specific game versions ranging from 1.20.0 to 1.21.4.
+
+### Changed
+- Improved version selection logic to recognize and handle exact versions such as 1.21.1 and 1.21.2.
+
+---
+
 ## [v0.5.1] - 9-20-2025
 
 ### Added

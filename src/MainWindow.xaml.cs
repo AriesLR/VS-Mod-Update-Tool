@@ -473,28 +473,35 @@ namespace VSModUpdater
                             foreach (var release in releases)
                             {
                                 var tags = release["tags"]?.Select(t => t.ToString()) ?? Enumerable.Empty<string>();
-                                if (!tags.Any(t => t.StartsWith(selectedVersionPrefix)))
+
+                                // Matches "1.21.x" style OR exact match like "1.21.1"
+                                bool versionMatches = tags.Any(t =>
+                                    t.Equals(selectedVersion, StringComparison.OrdinalIgnoreCase) ||
+                                    t.StartsWith(selectedVersionPrefix, StringComparison.OrdinalIgnoreCase)
+                                );
+
+                                if (!versionMatches)
                                     continue;
 
                                 string? releaseVersion = release["modversion"]?.ToString()?.TrimStart('v').Trim();
                                 if (string.IsNullOrEmpty(releaseVersion))
                                     continue;
 
-                                // Prefer stable releases
-                                var parsedVersion = NuGetVersion.TryParse(releaseVersion, out var v) ? v : null;
-                                if (parsedVersion == null)
+                                // Parse version safely
+                                if (!NuGetVersion.TryParse(releaseVersion, out var parsedVersion))
                                     continue;
 
                                 bool isPreRelease = parsedVersion.IsPrerelease;
 
+                                // Prefer stable releases first
                                 if (!isPreRelease)
                                 {
                                     chosenVersion = parsedVersion.ToNormalizedString();
                                     chosenDownloadUrl = release["mainfile"]?.ToString();
-                                    break; // stop at the first stable release
+                                    break; // stop at first stable match
                                 }
 
-                                // If no stable yet, keep pre-release as fallback
+                                // If no stable found yet, keep prerelease as fallback
                                 if (chosenVersion == null)
                                 {
                                     chosenVersion = parsedVersion.ToNormalizedString();

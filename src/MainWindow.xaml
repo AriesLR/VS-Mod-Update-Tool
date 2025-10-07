@@ -65,8 +65,30 @@
                         </Style>
                     </ComboBox.Style>
 
+                    <ComboBoxItem Content="1.21.4" />
+                    <ComboBoxItem Content="1.21.3" />
+                    <ComboBoxItem Content="1.21.2" />
+                    <ComboBoxItem Content="1.21.1" />
+                    <ComboBoxItem Content="1.21.0" />
+
                     <ComboBoxItem Content="1.21.x" />
+
+                    <ComboBoxItem Content="1.20.12" />
+                    <ComboBoxItem Content="1.20.11" />
+                    <ComboBoxItem Content="1.20.10" />
+                    <ComboBoxItem Content="1.20.9" />
+                    <ComboBoxItem Content="1.20.8" />
+                    <ComboBoxItem Content="1.20.7" />
+                    <ComboBoxItem Content="1.20.6" />
+                    <ComboBoxItem Content="1.20.5" />
+                    <ComboBoxItem Content="1.20.4" />
+                    <ComboBoxItem Content="1.20.3" />
+                    <ComboBoxItem Content="1.20.2" />
+                    <ComboBoxItem Content="1.20.1" />
+                    <ComboBoxItem Content="1.20.0" />
+
                     <ComboBoxItem Content="1.20.x" />
+
                     <ComboBoxItem Content="1.19.x" />
                     <ComboBoxItem Content="1.18.x" />
                     <ComboBoxItem Content="1.17.x" />
