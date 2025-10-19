@@ -419,7 +419,9 @@ namespace VSModUpdater
             var savedLinks = LoadSavedModLinks();
             var modsNeedingUpdate = new List<ModInfo>();
             var errors = new List<string>();
-            int totalModsChecked = mods.Count;
+
+            var modsToCheck = mods.Where(m => !m.DisableUpdate).ToList();
+            int totalModsChecked = modsToCheck.Count;
             processedModsChecked = 0;
 
             string selectedVersion = (GameVersionDropdown.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "1.21.x";
@@ -429,7 +431,7 @@ namespace VSModUpdater
             {
                 using var client = new HttpClient();
 
-                var tasks = mods.Select(async mod =>
+                var tasks = modsToCheck.Select(async mod =>
                 {
                     string zipPath = Path.Combine(ModsFolderTextBox.Text, mod.FileName);
 
@@ -454,6 +456,7 @@ namespace VSModUpdater
                             ?? throw new InvalidDataException($"Version missing in {mod.FileName}");
 
                         mod.Version = version;
+                        mod.ModId = modId;
 
                         // Fetch API info
                         string apiUrl = $"https://mods.vintagestory.at/api/mod/{modId}";
@@ -465,67 +468,63 @@ namespace VSModUpdater
                             mod.ModPageUrl = $"https://mods.vintagestory.at/show/mod/{assetId}";
 
                         var releases = apiData["mod"]?["releases"] as JArray;
+                        string? chosenVersion = null;
+                        string? chosenDownloadUrl = null;
+
                         if (releases != null && releases.Count > 0)
                         {
-                            string? chosenVersion = null;
-                            string? chosenDownloadUrl = null;
-
                             foreach (var release in releases)
                             {
                                 var tags = release["tags"]?.Select(t => t.ToString()) ?? Enumerable.Empty<string>();
-
-                                // Matches "1.21.x" style OR exact match like "1.21.1"
                                 bool versionMatches = tags.Any(t =>
                                     t.Equals(selectedVersion, StringComparison.OrdinalIgnoreCase) ||
-                                    t.StartsWith(selectedVersionPrefix, StringComparison.OrdinalIgnoreCase)
-                                );
+                                    t.StartsWith(selectedVersionPrefix, StringComparison.OrdinalIgnoreCase));
 
-                                if (!versionMatches)
-                                    continue;
+                                if (!versionMatches) continue;
 
                                 string? releaseVersion = release["modversion"]?.ToString()?.TrimStart('v').Trim();
-                                if (string.IsNullOrEmpty(releaseVersion))
-                                    continue;
-
-                                // Parse version safely
-                                if (!NuGetVersion.TryParse(releaseVersion, out var parsedVersion))
-                                    continue;
+                                if (string.IsNullOrEmpty(releaseVersion)) continue;
+                                if (!NuGetVersion.TryParse(releaseVersion, out var parsedVersion)) continue;
 
                                 bool isPreRelease = parsedVersion.IsPrerelease;
 
-                                // Prefer stable releases first
                                 if (!isPreRelease)
                                 {
                                     chosenVersion = parsedVersion.ToNormalizedString();
                                     chosenDownloadUrl = release["mainfile"]?.ToString();
-                                    break; // stop at first stable match
+                                    break; // first stable version
                                 }
 
-                                // If no stable found yet, keep prerelease as fallback
                                 if (chosenVersion == null)
                                 {
                                     chosenVersion = parsedVersion.ToNormalizedString();
                                     chosenDownloadUrl = release["mainfile"]?.ToString();
                                 }
                             }
+                        }
 
-                            if (chosenVersion != null && chosenDownloadUrl != null)
-                            {
-                                mod.LatestVersion = chosenVersion;
-                                mod.ModDownloadUrl = chosenDownloadUrl;
+                        if (chosenVersion != null)
+                            mod.LatestVersion = chosenVersion;
 
-                                lock (savedLinks)
-                                {
-                                    savedLinks[modId] = new ModLinkInfo
-                                    {
-                                        ModDownloadUrl = mod.ModDownloadUrl,
-                                        ModPageUrl = mod.ModPageUrl
-                                    };
-                                }
+                        if (chosenDownloadUrl != null)
+                            mod.ModDownloadUrl = chosenDownloadUrl;
 
-                                if (IsVersionGreater(mod.LatestVersion, mod.Version))
-                                    lock (modsNeedingUpdate) modsNeedingUpdate.Add(mod);
-                            }
+                        // Always add/update savedLinks
+                        lock (savedLinks)
+                        {
+                            if (!savedLinks.ContainsKey(modId))
+                                savedLinks[modId] = new ModLinkInfo();
+
+                            savedLinks[modId].ModPageUrl = mod.ModPageUrl;
+                            savedLinks[modId].ModDownloadUrl = mod.ModDownloadUrl ?? savedLinks[modId].ModDownloadUrl;
+                            savedLinks[modId].DisableUpdate = mod.DisableUpdate;
+                        }
+
+                        // Mark mod for update only if newer version exists
+                        if (!string.IsNullOrWhiteSpace(mod.LatestVersion) && IsVersionGreater(mod.LatestVersion, mod.Version))
+                        {
+                            lock (modsNeedingUpdate)
+                                modsNeedingUpdate.Add(mod);
                         }
                     }
                     catch (Exception ex)
@@ -564,6 +563,51 @@ namespace VSModUpdater
         }
 
         // ============ Mod Update Helpers ============
+
+        // Save Disable Update Status
+        private static void SaveDisableUpdateForMod(string modId, bool disabled)
+        {
+            try
+            {
+                var savedLinks = File.Exists(modlinksPath)
+                    ? JsonConvert.DeserializeObject<Dictionary<string, ModLinkInfo>>(File.ReadAllText(modlinksPath))
+                    : new Dictionary<string, ModLinkInfo>();
+
+                if (!savedLinks.ContainsKey(modId))
+                    savedLinks[modId] = new ModLinkInfo();
+
+                savedLinks[modId].DisableUpdate = disabled;
+
+                File.WriteAllText(modlinksPath, JsonConvert.SerializeObject(savedLinks, Formatting.Indented));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Failed to update DisableUpdate for {modId}: {ex.Message}");
+            }
+        }
+
+        // Disable Update Helper
+        private void DisableUpdateCheckBox_Changed(object sender, RoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.CheckBox cb && cb.DataContext is ModInfo mod)
+            {
+                var modId = mod.ModId;
+                var savedLinks = LoadSavedModLinks();
+
+                if (!savedLinks.ContainsKey(modId))
+                    savedLinks[modId] = new ModLinkInfo
+                    {
+                        ModPageUrl = mod.ModPageUrl,
+                        ModDownloadUrl = mod.ModDownloadUrl,
+                        DisableUpdate = cb.IsChecked == true
+                    };
+                else
+                    savedLinks[modId].DisableUpdate = cb.IsChecked == true;
+
+                SaveModLinks(savedLinks);
+            }
+        }
+
         private class ModUpdateResult
         {
             public bool Success { get; set; }
@@ -708,47 +752,68 @@ namespace VSModUpdater
         private async Task LoadModsFromFolderAsync(string folderPath)
         {
             var mods = new List<ModInfo>();
+            var savedLinks = LoadSavedModLinks();
 
             string GetValue(JObject obj, string key)
             {
-                return obj.Properties().FirstOrDefault(p => string.Equals(p.Name, key, StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? "";
+                return obj.Properties()
+                    .FirstOrDefault(p => string.Equals(p.Name, key, StringComparison.OrdinalIgnoreCase))?
+                    .Value?.ToString() ?? "";
             }
 
             foreach (var zipFile in Directory.GetFiles(folderPath, "*.zip"))
             {
                 try
                 {
+                    string fileName = Path.GetFileName(zipFile);
+                    string modName = fileName;
+                    string modId = "";
+                    string version = "N/A";
+                    string gameVersion = "N/A";
+                    string description = "N/A";
+
                     using (var archive = ZipFile.OpenRead(zipFile))
                     {
                         var entry = archive.GetEntry("modinfo.json");
+
                         if (entry != null)
                         {
-                            using (var stream = entry.Open())
-                            using (var reader = new StreamReader(stream))
-                            {
-                                string json = reader.ReadToEnd();
-                                var root = JObject.Parse(json);
+                            using var reader = new StreamReader(entry.Open());
+                            string json = await reader.ReadToEndAsync();
+                            var root = JObject.Parse(json);
 
-                                string gameVersion = "";
-                                var dependenciesToken = root.Properties().FirstOrDefault(p => string.Equals(p.Name, "dependencies", StringComparison.OrdinalIgnoreCase))?.Value as JObject;
-                                if (dependenciesToken != null)
-                                {
-                                    gameVersion = dependenciesToken.Properties().FirstOrDefault(p => string.Equals(p.Name, "game", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? "";
-                                }
+                            modName = string.IsNullOrWhiteSpace(GetValue(root, "name")) ? fileName : GetValue(root, "name");
+                            modId = root.Properties()
+                                .FirstOrDefault(p => string.Equals(p.Name, "modId", StringComparison.OrdinalIgnoreCase))?
+                                .Value?.ToString() ?? "";
+                            version = string.IsNullOrWhiteSpace(GetValue(root, "version")) ? "N/A" : GetValue(root, "version");
+                            description = string.IsNullOrWhiteSpace(GetValue(root, "description")) ? "N/A" : GetValue(root, "description");
 
-                                var mod = new ModInfo
-                                {
-                                    FileName = Path.GetFileName(zipFile),
-                                    Name = string.IsNullOrWhiteSpace(GetValue(root, "name")) ? "N/A" : GetValue(root, "name"),
-                                    Version = string.IsNullOrWhiteSpace(GetValue(root, "version")) ? "N/A" : GetValue(root, "version"),
-                                    Game = string.IsNullOrWhiteSpace(gameVersion) ? "N/A" : gameVersion,
-                                    Description = string.IsNullOrWhiteSpace(GetValue(root, "description")) ? "N/A" : GetValue(root, "description")
-                                };
-
-                                mods.Add(mod);
-                            }
+                            var dependenciesToken = root.Properties()
+                                .FirstOrDefault(p => string.Equals(p.Name, "dependencies", StringComparison.OrdinalIgnoreCase))?.Value as JObject;
+                            if (dependenciesToken != null)
+                                gameVersion = string.IsNullOrWhiteSpace(dependenciesToken.Properties()
+                                    .FirstOrDefault(p => string.Equals(p.Name, "game", StringComparison.OrdinalIgnoreCase))?.Value?.ToString())
+                                    ? "N/A"
+                                    : dependenciesToken.Properties()
+                                        .FirstOrDefault(p => string.Equals(p.Name, "game", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? "N/A";
                         }
                     }
+
+                    var mod = new ModInfo
+                    {
+                        FileName = fileName,
+                        Name = modName,
+                        ModId = modId,
+                        Version = version,
+                        Game = gameVersion,
+                        Description = description,
+                        DisableUpdate = !string.IsNullOrEmpty(modId) && savedLinks.ContainsKey(modId) ? savedLinks[modId].DisableUpdate : false,
+                        ModPageUrl = !string.IsNullOrEmpty(modId) && savedLinks.ContainsKey(modId) ? savedLinks[modId].ModPageUrl : "",
+                        ModDownloadUrl = !string.IsNullOrEmpty(modId) && savedLinks.ContainsKey(modId) ? savedLinks[modId].ModDownloadUrl : ""
+                    };
+
+                    mods.Add(mod);
                 }
                 catch (Exception ex)
                 {
@@ -757,6 +822,7 @@ namespace VSModUpdater
             }
 
             ModsDataGrid.ItemsSource = mods;
+            ModsDataGrid.Items.Refresh();
         }
 
         // ============ Models ============
@@ -776,11 +842,27 @@ namespace VSModUpdater
             public string? Game { get; set; }
             public string? Description { get; set; }
             public string LatestVersion { get; set; } = "";
-
             public string ModPageUrl { get; set; } = "";
             public string ModDownloadUrl { get; set; } = "";
 
-            public bool HasUpdate => !string.IsNullOrWhiteSpace(LatestVersion) && Version != LatestVersion;
+            public string ModId { get; set; } = "";
+
+            private bool disableUpdate;
+
+            public bool DisableUpdate
+            {
+                get => disableUpdate;
+                set
+                {
+                    if (disableUpdate != value)
+                    {
+                        disableUpdate = value;
+                        MainWindow.SaveDisableUpdateForMod(ModId, disableUpdate);
+                    }
+                }
+            }
+
+            public bool HasUpdate => !DisableUpdate && !string.IsNullOrWhiteSpace(LatestVersion) && Version != LatestVersion;
         }
 
         // ModLink Model
@@ -788,6 +870,7 @@ namespace VSModUpdater
         {
             public string ModPageUrl { get; set; } = "";
             public string ModDownloadUrl { get; set; } = "";
+            public bool DisableUpdate { get; set; } = false;
         }
 
         // End of class

@@ -8,9 +8,9 @@
                  xmlns:converters="clr-namespace:VSModUpdater.Resources.Functions.Converters"
                  Title="VS Mod Update Tool"
                  MinHeight="800"
-                 MinWidth="1150"
+                 MinWidth="1175"
                  Height="800"
-                 Width="1150"
+                 Width="1175"
                  FontFamily="Segoe UI"
                  GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
                  WindowStyle="SingleBorderWindow"
@@ -65,6 +65,7 @@
                         </Style>
                     </ComboBox.Style>
 
+                    <ComboBoxItem Content="1.21.5" />
                     <ComboBoxItem Content="1.21.4" />
                     <ComboBoxItem Content="1.21.3" />
                     <ComboBoxItem Content="1.21.2" />
@@ -182,7 +183,7 @@
             <DataGrid x:Name="ModsDataGrid"
                       Grid.Row="1"
                       AutoGenerateColumns="False"
-                      IsReadOnly="True"
+                      IsReadOnly="False"
                       CanUserAddRows="False"
                       Margin="0,0,0,10"
                       RowHeight="40"
@@ -208,7 +209,19 @@
                 </DataGrid.RowStyle>
 
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="Update" MinWidth="75" MaxWidth="75" SortMemberPath="HasUpdate">
+                    <DataGridTemplateColumn Header="Ignore" Width="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding DisableUpdate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <CheckBox.Resources>
+                                        <SolidColorBrush x:Key="MahApps.Brushes.Highlight" Color="#800300" />
+                                    </CheckBox.Resources>
+                                </CheckBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Update" MinWidth="75" MaxWidth="75" SortMemberPath="HasUpdate" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <iconPacks:PackIconMaterial Kind="CheckBold" Width="15" Height="15" Foreground="Green" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding HasUpdate, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -243,11 +256,11 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" MinWidth="225" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
-                    <DataGridTextColumn Header="Mod Name" Binding="{Binding Name}" MinWidth="225" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
-                    <DataGridTextColumn Header="Game Version" Binding="{Binding Game}" MinWidth="125" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
-                    <DataGridTextColumn Header="Installed Version" Binding="{Binding Version}" MinWidth="125" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
-                    <DataGridTextColumn Header="Latest Version" Binding="{Binding LatestVersion}" MinWidth="125" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" />
+                    <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" MinWidth="225" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Mod Name" Binding="{Binding Name}" MinWidth="225" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Game Version" Binding="{Binding Game}" MinWidth="125" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Installed Version" Binding="{Binding Version}" MinWidth="125" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Latest Version" Binding="{Binding LatestVersion}" MinWidth="125" Width="*" ElementStyle="{DynamicResource CenterCellTextBlockStyle}" IsReadOnly="True" />
                     <DataGridTemplateColumn Header="" MinWidth="100" Width="*" IsReadOnly="False">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
