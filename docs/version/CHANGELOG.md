@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.6.0]
+
+### Added
+- Added an Ignore column and matching logic to ignore checking for updates on specific mods in the event a new version of a mod causes issues, but an older version works fine.
+- Added 1.21.5 as an option for version selection.
+
+### Changed
+- Slightly increased the window size to accomodate the new column.
+- Reworded some comments for clarity.
+- Possible other changes to code I forgot about, it's been awhile between making these changes and pushing the update.
+
+---
+
 ## [v0.5.2]
 
 ### Added
