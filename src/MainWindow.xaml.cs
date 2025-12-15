@@ -473,7 +473,7 @@ namespace VSModUpdater
 
                         if (releases != null && releases.Count > 0)
                         {
-                            foreach (var release in releases)
+                            foreach (var release in releases.OrderByDescending(x => x["modversion"]))
                             {
                                 var tags = release["tags"]?.Select(t => t.ToString()) ?? Enumerable.Empty<string>();
                                 bool versionMatches = tags.Any(t =>
