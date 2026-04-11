@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.6.2]
+
+### Changed
+- Added 1.22.x and 1.22.0 as an option for version selection.
+- Updated Dependencies.
+
 ## [v0.6.1]
 
 ### Changed
