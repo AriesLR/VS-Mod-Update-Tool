@@ -69,6 +69,7 @@
 
                     <ComboBoxItem Content="1.22.x" />
 
+                    <ComboBoxItem Content="1.21.7" />
                     <ComboBoxItem Content="1.21.6" />
                     <ComboBoxItem Content="1.21.5" />
                     <ComboBoxItem Content="1.21.4" />

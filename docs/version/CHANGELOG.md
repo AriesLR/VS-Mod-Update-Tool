@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.6.3]
+
+### Changed
+- Added 1.21.7 as an option for version selection.
+
 ## [v0.6.2]
 
 ### Changed
