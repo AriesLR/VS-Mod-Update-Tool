@@ -65,6 +65,8 @@
                         </Style>
                     </ComboBox.Style>
 
+                    <ComboBoxItem Content="1.22.2" />
+                    <ComboBoxItem Content="1.22.1" />
                     <ComboBoxItem Content="1.22.0" />
 
                     <ComboBoxItem Content="1.22.x" />
